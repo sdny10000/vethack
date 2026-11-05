@@ -1,0 +1,1066 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f4">
+  <title>Money Moves | Understand a paycheck change</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172f36;
+      --muted: #647479;
+      --paper: #f6f7f4;
+      --white: #fff;
+      --line: #e2e8e3;
+      --green: #245e4b;
+      --green-dark: #193f35;
+      --green-light: #edf5ef;
+      --blue: #416986;
+      --blue-light: #eef4f8;
+      --gold: #f2c56b;
+      --orange-light: #fbf2e7;
+      --shadow: 0 12px 32px rgb(23 47 54 / 6%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); line-height: 1.5; }
+    button, input, select { font: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: 3px solid #e8ad41; outline-offset: 3px; }
+    .topbar { display: flex; min-height: 66px; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); padding: 10px max(22px, calc((100vw - 1120px) / 2)); background: white; }
+    .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 15px; font-weight: 850; text-decoration: none; }
+    .brand-mark { display: grid; width: 35px; height: 35px; place-items: center; border-radius: 12px; background: var(--green); color: white; }
+    .top-link { color: var(--green-dark); font-size: 12px; font-weight: 750; text-decoration: none; }
+    main { width: min(1120px, calc(100% - 36px)); margin: 30px auto 54px; }
+    .intro { max-width: 760px; margin: 0 auto 22px; text-align: center; }
+    .eyebrow { margin: 0 0 7px; color: var(--green); font-size: 10px; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+    h1 { margin: 0 0 9px; font-size: clamp(29px, 4vw, 40px); line-height: 1.1; letter-spacing: -.05em; }
+    .intro > p:last-child { margin: 0; color: var(--muted); font-size: 13px; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; align-items: start; gap: 17px; }
+    .flow-card, .side-card { border: 1px solid var(--line); border-radius: 17px; background: white; box-shadow: var(--shadow); }
+    .flow-card { min-width: 0; padding: 23px; }
+    .progress { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 23px; }
+    .progress-step { display: flex; align-items: center; gap: 8px; border-bottom: 3px solid var(--line); padding: 0 0 9px; color: var(--muted); cursor: pointer; font-size: 10px; font-weight: 750; }
+    .progress-step span { display: grid; width: 23px; height: 23px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #edf0ed; font-size: 10px; }
+    .progress-step.active, .progress-step.done { border-color: var(--green); color: var(--green-dark); }
+    .progress-step.active span, .progress-step.done span { background: var(--green); color: white; }
+    .freeform-note { margin: -7px 0 20px; border: 1px solid var(--line); border-radius: 11px; padding: 11px; background: #fbfcfa; }
+    .freeform-note label { display: block; margin-bottom: 5px; color: var(--green-dark); font-size: 10px; font-weight: 850; }
+    .freeform-note textarea { display: block; width: 100%; min-height: 58px; resize: vertical; border: 1px solid #d5dfd7; border-radius: 8px; padding: 8px 10px; background: white; color: var(--ink); font: inherit; font-size: 10px; }
+    .freeform-note textarea::placeholder { color: #78878a; }
+    .freeform-note p { margin: 5px 0 0; color: var(--muted); font-size: 9px; }
+    .stage[hidden], .general-answer[hidden], .result-panel[hidden], .field-error[hidden] { display: none; }
+    .stage h2 { margin: 0 0 5px; font-size: 20px; letter-spacing: -.03em; }
+    .stage-intro { margin: 0 0 17px; color: var(--muted); font-size: 12px; }
+    .choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .choice { position: relative; display: flex; min-height: 72px; align-items: flex-start; gap: 10px; border: 1px solid var(--line); border-radius: 11px; padding: 12px; cursor: pointer; transition: background .15s, border-color .15s; }
+    .choice:has(input:checked) { border-color: var(--green); background: var(--green-light); box-shadow: inset 3px 0 var(--green); }
+    .choice input { margin: 3px 0 0; accent-color: var(--green); }
+    .choice strong, .choice small { display: block; }
+    .choice strong { font-size: 11px; }
+    .choice small { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .button-row { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 18px; }
+    .button { display: inline-flex; min-height: 41px; align-items: center; justify-content: center; border: 0; border-radius: 10px; padding: 9px 14px; background: var(--green); color: white; cursor: pointer; font-size: 11px; font-weight: 800; text-decoration: none; }
+    .button:hover { background: var(--green-dark); }
+    .button.secondary { border: 1px solid var(--line); background: white; color: var(--ink); }
+    .button.secondary:hover { background: var(--green-light); }
+    .text-button { border: 0; padding: 8px 5px; background: transparent; color: var(--green); cursor: pointer; font-size: 10px; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+    .quiet-note { margin: 13px 0 0; color: var(--muted); font-size: 10px; }
+    .pay-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+    .pay-card { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: #fbfcfa; }
+    .pay-card h3 { margin: 0 0 11px; color: var(--green-dark); font-size: 12px; }
+    .field-label { display: block; margin: 0 0 5px; color: var(--muted); font-size: 10px; font-weight: 750; }
+    .amount-wrap { position: relative; }
+    .amount-wrap::before { position: absolute; top: 10px; left: 11px; color: var(--muted); content: "$"; font-size: 13px; }
+    .amount-wrap input { width: 100%; height: 41px; border: 1px solid #d5dfd7; border-radius: 8px; padding: 7px 10px 7px 25px; background: white; color: var(--ink); font-size: 15px; font-weight: 800; }
+    .pay-card select { width: 100%; height: 38px; margin-top: 11px; border: 1px solid #d5dfd7; border-radius: 8px; padding: 6px 9px; background: white; color: var(--ink); font-size: 10px; }
+    .document-upload { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 11px; border-top: 1px solid var(--line); padding-top: 10px; }
+    .document-upload input[type="file"] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+    .document-upload input[type="file"]:focus-visible + label { outline: 3px solid #e8ad41; outline-offset: 3px; }
+    .upload-button { display: inline-flex; min-height: 34px; align-items: center; gap: 6px; border: 1px solid #cbd9ce; border-radius: 8px; padding: 6px 9px; background: white; color: var(--green-dark); cursor: pointer; font-size: 9px; font-weight: 800; }
+    .upload-button:hover { background: var(--green-light); }
+    .file-status { flex: 1 1 100%; margin: 0; color: var(--muted); font-size: 9px; overflow-wrap: anywhere; }
+    .file-status.selected { color: var(--green-dark); font-weight: 750; }
+    .file-error { flex: 1 1 100%; margin: 0; color: #a44336; font-size: 9px; }
+    .extracted-details { flex: 1 1 100%; display: grid; gap: 4px; margin-top: 6px; border: 1px solid #d5e3d8; border-radius: 8px; padding: 8px 10px; background: var(--green-light); font-size: 9px; }
+    .extracted-details[hidden] { display: none; }
+    .extracted-details-row { display: flex; justify-content: space-between; gap: 8px; color: #536960; }
+    .extracted-details-row strong { color: var(--green-dark); }
+    .basis-label { margin-top: 10px; }
+    .basis-choice { display: flex; gap: 12px; }
+    .basis-choice label { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 10px; }
+    .basis-choice input { accent-color: var(--green); }
+    .breakdown-entry { margin-top: 15px; border-top: 1px solid var(--line); padding-top: 12px; }
+    .breakdown-entry summary { color: var(--green-dark); cursor: pointer; font-size: 11px; font-weight: 850; }
+    .breakdown-entry > p { margin: 5px 0 10px; color: var(--muted); font-size: 9px; }
+    .breakdown-table { display: grid; grid-template-columns: minmax(130px, 1.3fr) repeat(2, minmax(100px, 1fr)); gap: 6px 8px; align-items: center; }
+    .breakdown-table > strong { color: var(--muted); font-size: 9px; }
+    .breakdown-table > span { color: #536960; font-size: 10px; }
+    .breakdown-table input { width: 100%; min-width: 0; height: 33px; border: 1px solid #d5dfd7; border-radius: 7px; padding: 5px 7px; font-size: 10px; text-align: right; }
+    .breakdown-error { margin: 8px 0 0; color: #a44336; font-size: 10px; }
+    .field-error { margin: 11px 0 0; color: #a44336; font-size: 10px; }
+    .factor-box { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 13px; }
+    .factor-box h3 { margin: 0 0 4px; font-size: 12px; }
+    .factor-box > p { margin: 0 0 9px; color: var(--muted); font-size: 10px; }
+    .factor-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .factor { display: flex; align-items: flex-start; gap: 6px; border: 1px solid #edf0ed; border-radius: 8px; padding: 8px; color: #536960; cursor: pointer; font-size: 9px; }
+    .factor:has(input:checked) { border-color: #9ab8a3; background: var(--green-light); color: var(--green-dark); }
+    .factor input { margin: 1px 0 0; accent-color: var(--green); }
+    .result-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 13px; }
+    .result-head h2 { margin: 0 0 4px; }
+    .result-head p { margin: 0; color: var(--muted); font-size: 10px; }
+    .result-total { border-radius: 12px; padding: 14px; background: var(--green-light); text-align: center; }
+    .result-total span, .result-total strong { display: block; }
+    .result-total span { color: #536960; font-size: 10px; }
+    .result-total strong { margin-top: 2px; color: var(--green-dark); font-size: 29px; letter-spacing: -.05em; }
+    .comparison { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; margin: 12px 0; }
+    .comparison-item { border: 1px solid var(--line); border-radius: 10px; padding: 11px; }
+    .comparison-item span, .comparison-item strong, .comparison-item small { display: block; }
+    .comparison-item span { color: var(--muted); font-size: 9px; }
+    .comparison-item strong { margin-top: 3px; font-size: 16px; }
+    .comparison-item small { margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .comparison-arrow { color: var(--green); font-size: 18px; font-weight: 850; }
+    .verbal-summary { margin: 12px 0; border: 1px solid #cfe0d4; border-radius: 11px; padding: 13px 14px; background: #f8fbf9; }
+    .verbal-summary h3 { margin: 0 0 6px; color: var(--green-dark); font-size: 12px; }
+    .verbal-summary p { margin: 0 0 8px; color: var(--ink); font-size: 11px; line-height: 1.55; }
+    .verbal-summary p:last-child { margin-bottom: 0; }
+    .verbal-summary ul { margin: 6px 0 0; padding-left: 18px; color: #3f554d; font-size: 10.5px; line-height: 1.5; }
+    .verbal-summary li { margin-bottom: 4px; }
+    .verbal-summary li:last-child { margin-bottom: 0; }
+    .result-caveat { margin: 0; border-radius: 9px; padding: 10px; background: var(--blue-light); color: #385b72; font-size: 10px; }
+    .breakdown-result { margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+    .breakdown-result h3 { margin: 0 0 4px; font-size: 12px; }
+    .breakdown-result > p { margin: 0; color: var(--muted); font-size: 9px; }
+    .breakdown-lines { display: grid; gap: 0; margin-top: 7px; }
+    .breakdown-line { display: flex; justify-content: space-between; gap: 10px; border-top: 1px solid #edf0ed; padding: 7px 0; color: #536960; font-size: 10px; }
+    .breakdown-line strong { color: var(--ink); white-space: nowrap; }
+    .breakdown-line.total { color: var(--green-dark); font-weight: 850; }
+    .breakdown-line.total strong { color: var(--green-dark); }
+    .selected-factors { margin-top: 12px; border-radius: 9px; padding: 10px; background: #f6f7f4; color: #536960; font-size: 10px; }
+    .selected-factors strong { color: var(--ink); }
+    .next-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+    .next-step { border: 1px solid var(--line); border-radius: 10px; padding: 11px; background: white; }
+    .next-step span { display: block; margin-bottom: 5px; font-size: 15px; }
+    .next-step strong { display: block; font-size: 10px; }
+    .next-step p { margin: 4px 0 0; color: var(--muted); font-size: 9px; }
+    .result-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .general-answer { margin-top: 14px; border: 1px solid #d8e3da; border-radius: 12px; padding: 15px; background: white; }
+    .general-answer h3 { margin: 0 0 6px; font-size: 14px; }
+    .general-answer p { margin: 0; color: #536960; font-size: 11px; }
+    .paycheck-equation { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+    .equation-part { min-height: 67px; border-radius: 9px; padding: 9px; background: var(--green-light); }
+    .equation-part.deduction { background: var(--orange-light); }
+    .equation-part strong, .equation-part span { display: block; }
+    .equation-part strong { color: var(--green-dark); font-size: 10px; }
+    .equation-part.deduction strong { color: #72512f; }
+    .equation-part span { margin-top: 4px; color: var(--muted); font-size: 8px; }
+    .equation-sign { display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 14px; font-weight: 850; }
+    .general-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin: 11px 0 0; padding: 0; list-style: none; }
+    .general-list li { border-radius: 8px; padding: 8px; background: var(--green-light); color: var(--green-dark); font-size: 10px; }
+    .side-card { padding: 17px; }
+    .side-card h2 { margin: 0 0 7px; font-size: 14px; }
+    .side-card > p { margin: 0; color: var(--muted); font-size: 10px; }
+    .privacy-box { margin-top: 15px; border-radius: 10px; padding: 11px; background: #f3f5f2; }
+    .privacy-box strong { display: block; margin-bottom: 4px; color: var(--green-dark); font-size: 10px; }
+    .privacy-box p { margin: 0; color: var(--muted); font-size: 9px; }
+    .support-callout { margin-top: 10px; border-radius: 10px; padding: 11px; background: var(--orange-light); }
+    .support-callout strong { display: block; margin-bottom: 4px; color: #72512f; font-size: 10px; }
+    .support-callout p { margin: 0; color: #72512f; font-size: 9px; }
+    footer { margin-top: 18px; color: var(--muted); font-size: 9px; text-align: center; }
+
+    @media (max-width: 800px) {
+      .layout { grid-template-columns: 1fr; }
+      .side-card { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+      .side-card > h2, .side-card > p { grid-column: 1 / -1; }
+      .privacy-box, .support-callout { margin-top: 2px; }
+    }
+    @media (max-width: 560px) {
+      .topbar { padding-right: 14px; padding-left: 14px; }
+      main { width: calc(100% - 22px); margin-top: 22px; }
+      .flow-card { padding: 16px; }
+      .choice-grid, .pay-grid { grid-template-columns: 1fr; }
+      .factor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .next-steps { grid-template-columns: 1fr; }
+      .side-card { display: block; }
+      .privacy-box, .support-callout { margin-top: 10px; }
+      .comparison { grid-template-columns: 1fr; }
+      .comparison-arrow { justify-self: center; transform: rotate(90deg); }
+      .general-list { grid-template-columns: 1fr; }
+      .breakdown-table { grid-template-columns: minmax(94px, 1fr) repeat(2, minmax(75px, .75fr)); gap: 6px; }
+      .breakdown-table input { padding-right: 4px; padding-left: 4px; font-size: 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./index.html"><span class="brand-mark" aria-hidden="true">M</span> Money Moves</a>
+    <a class="top-link" href="./index.html">Back to the demo</a>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="eyebrow">Paycheck change · guided workflow</p>
+      <h1>Let’s figure out what changed.</h1>
+      <p>Start with a general explanation, or compare two pay amounts. You control what you share.</p>
+    </section>
+
+    <div class="layout">
+      <section class="flow-card" aria-label="Paycheck change workflow">
+        <div class="progress" aria-label="Workflow progress">
+          <div class="progress-step active" data-progress="1"><span>1</span> Choose a comparison</div>
+          <div class="progress-step" data-progress="2"><span>2</span> Add details</div>
+          <div class="progress-step" data-progress="3"><span>3</span> Review next steps</div>
+        </div>
+        <div class="freeform-note">
+          <label for="pay-change-note">Anything else about this pay change? (optional)</label>
+          <textarea id="pay-change-note" maxlength="1000" placeholder="Add a question or detail you want to keep in mind as you compare pay…"></textarea>
+          <div class="button-row"><button class="button" id="ask-ai-button" type="button">Explain my note with Money Moves</button><span class="quiet-note">Available at every step</span></div>
+          <p>Only when you choose Explain, your note and current comparison details are sent to the configured Azure OpenAI deployment. Files are not read or uploaded. Don’t include account numbers or government IDs.</p>
+          <section class="general-answer" id="ai-answer" role="status" aria-live="polite" hidden>
+            <h3 id="ai-answer-heading">Money Moves response</h3>
+            <p id="ai-answer-explanation"></p>
+            <div class="privacy-box"><strong>One useful next step</strong><p id="ai-answer-step"></p></div>
+            <div class="privacy-box"><strong>Where to get more help</strong><p id="ai-answer-support"></p></div>
+            <p class="quiet-note" id="ai-answer-sources"></p>
+            <div id="ai-answer-followups"></div>
+          </section>
+        </div>
+
+        <section class="stage" id="stage-1" aria-labelledby="stage-1-title">
+          <h2 id="stage-1-title">What changed?</h2>
+          <p class="stage-intro">Choose the comparison that feels closest. No paycheck data is needed to continue.</p>
+          <div class="choice-grid" role="radiogroup" aria-label="Choose what pay amounts to compare">
+            <label class="choice"><input type="radio" name="comparison-type" value="military-civilian"><span><strong>Military pay and civilian pay</strong><small>Compare take-home across a transition</small></span></label>
+            <label class="choice"><input type="radio" name="comparison-type" value="old-new"><span><strong>My old paycheck and new paycheck</strong><small>See how two pay periods compare</small></span></label>
+            <label class="choice"><input type="radio" name="comparison-type" value="expected-received"><span><strong>What I expected and received</strong><small>Check an amount or pay-period difference</small></span></label>
+            <label class="choice"><input type="radio" name="comparison-type" value="other"><span><strong>Something else</strong><small>Start with the general explanation</small></span></label>
+          </div>
+          <div class="button-row">
+            <button class="button" id="continue-button" type="button">Continue</button>
+            <button class="text-button" id="general-button" type="button">I just want a general explanation</button>
+          </div>
+          <p class="quiet-note">You can skip exact amounts, and nothing on this demo page is saved.</p>
+        </section>
+
+        <section class="stage" id="stage-2" aria-labelledby="stage-2-title" hidden>
+          <h2 id="stage-2-title">Compare two pay amounts</h2>
+          <p class="stage-intro">Use take-home amounts if you have them. Choose gross pay only when comparing gross pay on both sides.</p>
+          <div class="pay-grid">
+            <article class="pay-card">
+              <h3 id="first-pay-title">Earlier or expected amount</h3>
+              <label class="field-label" for="first-amount">Amount</label>
+              <div class="amount-wrap"><input id="first-amount" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="Enter amount"></div>
+              <label class="field-label" for="first-frequency" style="margin-top:11px">How often was it paid?</label>
+              <select id="first-frequency">
+                <option value="weekly">Weekly</option>
+                <option value="biweekly" selected>Every two weeks</option>
+                <option value="semimonthly">Twice a month</option>
+                <option value="monthly">Monthly</option>
+                <option value="annual">Yearly</option>
+              </select>
+              <span class="field-label basis-label">This amount is:</span>
+              <div class="basis-choice">
+                <label><input type="radio" name="first-basis" value="take-home" checked> After deductions</label>
+                <label><input type="radio" name="first-basis" value="gross"> Before deductions</label>
+              </div>
+              <div class="document-upload">
+                <input id="military-document" type="file" accept=".pdf,.png,.jpg,.jpeg,.docx,.txt,application/pdf,image/png,image/jpeg,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" aria-label="Choose a military pay statement">
+                <label class="upload-button" for="military-document"><span aria-hidden="true">↑</span> Upload military pay document</label>
+                <p class="file-status" id="military-document-status" role="status" aria-live="polite">Optional · PDF, DOCX, image, or TXT · up to 10 MB</p>
+                <p class="file-error" id="military-document-error" role="alert" hidden></p>
+                <div class="extracted-details" id="military-extracted-details" aria-live="polite" hidden></div>
+              </div>
+            </article>
+            <article class="pay-card">
+              <h3 id="second-pay-title">Current or received amount</h3>
+              <label class="field-label" for="second-amount">Amount</label>
+              <div class="amount-wrap"><input id="second-amount" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="Enter amount"></div>
+              <label class="field-label" for="second-frequency" style="margin-top:11px">How often is it paid?</label>
+              <select id="second-frequency">
+                <option value="weekly">Weekly</option>
+                <option value="biweekly" selected>Every two weeks</option>
+                <option value="semimonthly">Twice a month</option>
+                <option value="monthly">Monthly</option>
+                <option value="annual">Yearly</option>
+              </select>
+              <span class="field-label basis-label">This amount is:</span>
+              <div class="basis-choice">
+                <label><input type="radio" name="second-basis" value="take-home" checked> After deductions</label>
+                <label><input type="radio" name="second-basis" value="gross"> Before deductions</label>
+              </div>
+              <div class="document-upload">
+                <input id="civilian-document" type="file" accept=".pdf,.png,.jpg,.jpeg,.docx,.txt,application/pdf,image/png,image/jpeg,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" aria-label="Choose a civilian pay statement">
+                <label class="upload-button" for="civilian-document"><span aria-hidden="true">↑</span> Upload civilian pay document</label>
+                <p class="file-status" id="civilian-document-status" role="status" aria-live="polite">Optional · PDF, DOCX, image, or TXT · up to 10 MB</p>
+                <p class="file-error" id="civilian-document-error" role="alert" hidden></p>
+                <div class="extracted-details" id="civilian-extracted-details" aria-live="polite" hidden></div>
+              </div>
+            </article>
+          </div>
+          <p class="quiet-note">Upload a pay statement (PDF, DOCX, image, or TXT) to automatically analyze and fill the form, or enter amounts manually.</p>
+
+          <details class="breakdown-entry">
+            <summary>I have pay statement details and want to see what changed</summary>
+            <p>Enter amounts from each pay period, not monthly totals. Complete both columns for a row or leave both blank. This optional breakdown won’t identify a cause by itself.</p>
+            <div class="breakdown-table" role="group" aria-label="Optional pay statement detail comparison">
+              <span></span><strong id="breakdown-first-header">Earlier / expected</strong><strong id="breakdown-second-header">Current / received</strong>
+              <span>Regular pay / hours</span><input type="number" min="0" max="1000000" step="0.01" data-breakdown="earnings" aria-label="Earlier regular pay or hours amount"><input type="number" min="0" max="1000000" step="0.01" data-breakdown="earnings" aria-label="Current regular pay or hours amount">
+              <span>Allowances / extra pay</span><input type="number" min="0" max="1000000" step="0.01" data-breakdown="allowances" aria-label="Earlier allowances or extra pay"><input type="number" min="0" max="1000000" step="0.01" data-breakdown="allowances" aria-label="Current allowances or extra pay">
+              <span>Taxes / withholding</span><input type="number" min="0" max="1000000" step="0.01" data-breakdown="taxes" aria-label="Earlier taxes or withholding"><input type="number" min="0" max="1000000" step="0.01" data-breakdown="taxes" aria-label="Current taxes or withholding">
+              <span>Social Security / Medicare</span><input type="number" min="0" max="1000000" step="0.01" data-breakdown="fica" aria-label="Earlier Social Security and Medicare"><input type="number" min="0" max="1000000" step="0.01" data-breakdown="fica" aria-label="Current Social Security and Medicare">
+              <span>Insurance / benefits</span><input type="number" min="0" max="1000000" step="0.01" data-breakdown="insurance" aria-label="Earlier insurance or benefits"><input type="number" min="0" max="1000000" step="0.01" data-breakdown="insurance" aria-label="Current insurance or benefits">
+              <span>Retirement contribution</span><input type="number" min="0" max="1000000" step="0.01" data-breakdown="retirement" aria-label="Earlier retirement contribution"><input type="number" min="0" max="1000000" step="0.01" data-breakdown="retirement" aria-label="Current retirement contribution">
+              <span>Other deductions</span><input type="number" min="0" max="1000000" step="0.01" data-breakdown="other" aria-label="Earlier other deductions"><input type="number" min="0" max="1000000" step="0.01" data-breakdown="other" aria-label="Current other deductions">
+            </div>
+            <p class="breakdown-error" id="breakdown-error" role="alert" hidden>For each item, enter both pay-period amounts or leave both blank.</p>
+          </details>
+
+          <div class="factor-box">
+            <h3>Do you know what might have changed?</h3>
+            <p>Optional—select any that seem relevant. This helps frame what to check, but doesn’t prove the cause.</p>
+            <div class="factor-grid">
+              <label class="factor"><input type="checkbox" value="Pay rate or hours"> Pay rate or hours</label>
+              <label class="factor"><input type="checkbox" value="Pay schedule"> Pay schedule</label>
+              <label class="factor"><input type="checkbox" value="Allowances"> Allowances</label>
+              <label class="factor"><input type="checkbox" value="Taxes or withholding"> Taxes or withholding</label>
+              <label class="factor"><input type="checkbox" value="Insurance or benefits"> Insurance or benefits</label>
+              <label class="factor"><input type="checkbox" value="Retirement contribution"> Retirement contribution</label>
+              <label class="factor"><input type="checkbox" value="I’m not sure"> I’m not sure</label>
+            </div>
+          </div>
+          <p class="field-error" id="amount-error" role="alert" hidden>Enter both amounts as numbers from $0 to $1,000,000 to see the comparison.</p>
+          <div class="button-row">
+            <button class="button secondary" type="button" data-back>Back</button>
+            <button class="button" id="compare-button" type="button">See my comparison</button>
+            <button class="text-button" id="skip-details-button" type="button">Skip amounts</button>
+          </div>
+          <p class="quiet-note">Don’t enter account numbers, Social Security numbers, or other identifying details.</p>
+        </section>
+
+        <section class="stage" id="stage-3" aria-labelledby="stage-3-title" hidden>
+          <div class="result-head">
+            <div><h2 id="stage-3-title">Your pay comparison</h2><p id="result-subtitle">A simple estimate based only on what you entered.</p></div>
+            <span class="eyebrow">Your numbers</span>
+          </div>
+          <div class="result-panel" id="calculated-result">
+            <div class="result-total"><span>Estimated monthly difference</span><strong id="monthly-difference">$0</strong></div>
+            <div class="comparison">
+              <div class="comparison-item"><span id="result-first-label">Earlier or expected</span><strong id="first-monthly">$0</strong><small id="first-period-note"></small></div>
+              <span class="comparison-arrow" aria-hidden="true">→</span>
+              <div class="comparison-item"><span id="result-second-label">Current or received</span><strong id="second-monthly">$0</strong><small id="second-period-note"></small></div>
+            </div>
+            <section class="verbal-summary" id="comparison-verbal-summary" aria-labelledby="verbal-summary-title">
+              <h3 id="verbal-summary-title">What this difference means in plain language</h3>
+              <div id="verbal-summary-content"></div>
+            </section>
+            <p class="result-caveat" id="comparison-caveat"></p>
+            <section class="breakdown-result" id="breakdown-result" aria-label="Estimated paycheck change breakdown" hidden>
+              <h3>What contributed to the change?</h3>
+              <p>Estimated monthly effect of the details you entered. A positive amount adds to take-home; a negative amount reduces it.</p>
+              <div class="breakdown-lines" id="breakdown-lines"></div>
+            </section>
+            <div class="selected-factors" id="factor-summary" hidden></div>
+          </div>
+          <div class="general-answer" id="general-answer" hidden>
+            <h3>A few common reasons take-home pay changes</h3>
+            <p>A different paycheck doesn’t automatically mean something is wrong. The amount can change for several reasons, and the pay statement or payroll office is the best place to confirm the exact cause.</p>
+            <div class="paycheck-equation" aria-label="Paycheck calculation overview">
+              <div class="equation-part"><strong>Regular pay</strong><span>Rate, hours, or salary</span></div>
+              <span class="equation-sign" aria-hidden="true">+</span>
+              <div class="equation-part"><strong>Allowances</strong><span>Other pay components</span></div>
+              <span class="equation-sign" aria-hidden="true">−</span>
+              <div class="equation-part deduction"><strong>Deductions</strong><span>Tax, insurance, retirement</span></div>
+            </div>
+            <p class="quiet-note">The result after deductions is take-home pay. A change to any part—or to how often you’re paid—can change the check.</p>
+            <ul class="general-list">
+              <li>Different pay rate, hours, or pay frequency</li>
+              <li>Allowances or other pay components changed</li>
+              <li>Taxes or withholding changed</li>
+              <li>Insurance or benefit deductions started or changed</li>
+              <li>Retirement contributions changed</li>
+              <li>A one-time adjustment or correction appeared</li>
+            </ul>
+          </div>
+          <div class="next-steps">
+            <article class="next-step"><span aria-hidden="true">▤</span><strong>Review a deduction</strong><p>Find its name and amount on the pay statement.</p></article>
+            <article class="next-step"><span aria-hidden="true">◎</span><strong>Check your monthly plan</strong><p>Use a typical month and account for irregular costs.</p></article>
+            <article class="next-step"><span aria-hidden="true">?</span><strong>Ask payroll</strong><p>Request an explanation of a line you don’t recognize.</p></article>
+          </div>
+          <p class="quiet-note">This comparison shows arithmetic, not the reason for the change. It is not tax, legal, or financial advice.</p>
+          <div class="result-actions">
+            <button class="button secondary" type="button" data-back>Change my answers</button>
+            <button class="button" id="restart-button" type="button">Start over</button>
+          </div>
+        </section>
+      </section>
+
+      <aside class="side-card">
+        <h2>Helpful to know</h2>
+        <p>Paychecks can look different even when pay is on track. The schedule, pay components, and deductions all matter.</p>
+        <div class="privacy-box"><strong>Your choice, your pace</strong><p>You can skip amounts. Notes and entered pay details are sent to Azure OpenAI only when you select Explain. They are not saved by this app.</p></div>
+        <div class="support-callout"><strong>Need a real person?</strong><p>Ask your payroll or military pay office to explain a specific pay statement. Share only what they need to help.</p></div>
+      </aside>
+    </div>
+    <footer>Money Moves paycheck workflow · Educational only · Share only what you choose</footer>
+  </main>
+
+  <script>
+    const stages = [...document.querySelectorAll(".stage")];
+    const progressSteps = [...document.querySelectorAll(".progress-step")];
+    const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
+    const frequencies = {
+      weekly: { multiplier: 52 / 12, label: "per week" },
+      biweekly: { multiplier: 26 / 12, label: "every two weeks" },
+      semimonthly: { multiplier: 2, label: "twice a month" },
+      monthly: { multiplier: 1, label: "per month" },
+      annual: { multiplier: 1 / 12, label: "per year" }
+    };
+    const comparisonTypes = {
+      "military-civilian": ["Military pay", "Civilian pay"],
+      "old-new": ["Earlier paycheck", "New paycheck"],
+      "expected-received": ["Expected amount", "Amount received"],
+      other: ["Earlier or expected amount", "Current or received amount"]
+    };
+    let activeStage = 1;
+    const paycheckNote = document.querySelector("#pay-change-note");
+    const aiAnswer = document.querySelector("#ai-answer");
+    const aiAskButton = document.querySelector("#ask-ai-button");
+
+    function currentPaycheckRequest() {
+      const readAmount = selector => {
+        const value = document.querySelector(selector).valueAsNumber;
+        return Number.isFinite(value) ? value : null;
+      };
+      const breakdownKeys = [
+        ["earnings", "Regular pay / hours"],
+        ["allowances", "Allowances / extra pay"],
+        ["taxes", "Taxes / withholding"],
+        ["fica", "Social Security / Medicare"],
+        ["insurance", "Insurance / benefits"],
+        ["retirement", "Retirement contribution"],
+        ["other", "Other deductions"]
+      ];
+      return {
+        stage: activeStage,
+        note: paycheckNote.value,
+        comparison: {
+          type: document.querySelector("input[name='comparison-type']:checked")?.value ?? null,
+          earlier: {
+            amount: readAmount("#first-amount"),
+            frequency: document.querySelector("#first-frequency").value,
+            basis: document.querySelector("input[name='first-basis']:checked").value
+          },
+          current: {
+            amount: readAmount("#second-amount"),
+            frequency: document.querySelector("#second-frequency").value,
+            basis: document.querySelector("input[name='second-basis']:checked").value
+          },
+          breakdown: breakdownKeys.map(([key, label]) => {
+            const values = [...document.querySelectorAll(`[data-breakdown="${key}"]`)].map(field => {
+              const value = field.valueAsNumber;
+              return Number.isFinite(value) ? value : null;
+            });
+            return { label, earlier: values[0], current: values[1] };
+          })
+        },
+        factors: [...document.querySelectorAll(".factor input:checked")].map(input => input.value)
+      };
+    }
+
+    function clearAiAnswer() {
+      aiAnswer.hidden = true;
+      document.querySelector("#ai-answer-explanation").textContent = "";
+      document.querySelector("#ai-answer-step").textContent = "";
+      document.querySelector("#ai-answer-support").textContent = "";
+      document.querySelector("#ai-answer-sources").textContent = "";
+      document.querySelector("#ai-answer-followups").replaceChildren();
+    }
+
+    async function askMoneyMoves() {
+      aiAskButton.disabled = true;
+      aiAskButton.textContent = "Thinking…";
+      document.querySelector("#ai-answer-heading").textContent = "Working on your question…";
+      document.querySelector("#ai-answer-explanation").textContent = "Reviewing the note and comparison details you chose to share.";
+      document.querySelector("#ai-answer-step").textContent = "";
+      document.querySelector("#ai-answer-support").textContent = "";
+      document.querySelector("#ai-answer-sources").textContent = "";
+      document.querySelector("#ai-answer-followups").replaceChildren();
+      aiAnswer.hidden = false;
+
+      try {
+        const apiBase = window.location.protocol === "file:" ? "http://localhost:3000" : "";
+        const response = await fetch(`${apiBase}/api/paycheck-explain`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(currentPaycheckRequest())
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "The answer service is unavailable. Please try again.");
+        const answer = result.answer;
+        document.querySelector("#ai-answer-heading").textContent = "Money Moves response";
+        document.querySelector("#ai-answer-explanation").textContent = answer.explanation;
+        document.querySelector("#ai-answer-step").textContent = answer.nextStep;
+        document.querySelector("#ai-answer-support").textContent = answer.humanSupport;
+        document.querySelector("#ai-answer-sources").textContent = answer.sources.join(" · ");
+        answer.followUps.forEach(prompt => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "text-button";
+          button.textContent = prompt;
+          button.addEventListener("click", () => {
+            paycheckNote.value = prompt;
+            clearAiAnswer();
+            paycheckNote.focus();
+          });
+          document.querySelector("#ai-answer-followups").append(button);
+        });
+      } catch (error) {
+        document.querySelector("#ai-answer-heading").textContent = "Couldn’t get an answer";
+        document.querySelector("#ai-answer-explanation").textContent = error instanceof Error ? error.message : "The answer service is unavailable. Please try again.";
+      } finally {
+        aiAskButton.disabled = false;
+        aiAskButton.textContent = "Explain my note with Money Moves";
+      }
+    }
+
+    aiAskButton.addEventListener("click", askMoneyMoves);
+    document.querySelectorAll("#pay-change-note, #stage-2 input:not([type='file']), #stage-2 select, .factor input").forEach(input => {
+      input.addEventListener("input", clearAiAnswer);
+      input.addEventListener("change", clearAiAnswer);
+    });
+
+    function showStage(stageNumber) {
+      activeStage = stageNumber;
+      stages.forEach((stage, index) => {
+        stage.hidden = index + 1 !== stageNumber;
+      });
+      progressSteps.forEach((step, index) => {
+        const number = index + 1;
+        step.classList.toggle("active", number === stageNumber);
+        step.classList.toggle("done", number < stageNumber);
+        step.querySelector("span").textContent = number < stageNumber ? "✓" : String(number);
+      });
+      document.querySelector(`#stage-${stageNumber} h2`).focus({ preventScroll: true });
+    }
+
+    function selectedComparisonType() {
+      return document.querySelector("input[name='comparison-type']:checked")?.value ?? "other";
+    }
+
+    function updateComparisonLabels() {
+      const [firstLabel, secondLabel] = comparisonTypes[selectedComparisonType()];
+      document.querySelector("#first-pay-title").textContent = firstLabel;
+      document.querySelector("#second-pay-title").textContent = secondLabel;
+      document.querySelector("#result-first-label").textContent = firstLabel;
+      document.querySelector("#result-second-label").textContent = secondLabel;
+      document.querySelector("#breakdown-first-header").textContent = firstLabel;
+      document.querySelector("#breakdown-second-header").textContent = secondLabel;
+    }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("Could not read the selected file."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderExtractedCardDetails(documentType, extraction) {
+      const box = document.querySelector(documentType === "military" ? "#military-extracted-details" : "#civilian-extracted-details");
+      if (!box) return;
+      box.replaceChildren();
+      const labels = [
+        ["earnings", "Regular pay / hours"],
+        ["allowances", "Allowances / extra pay"],
+        ["taxes", "Taxes / withholding"],
+        ["fica", "Social Security / Medicare"],
+        ["insurance", "Insurance / benefits"],
+        ["retirement", "Retirement contribution"],
+        ["other", "Other deductions"]
+      ];
+      let count = 0;
+      for (const [key, label] of labels) {
+        const val = extraction.breakdown?.[key];
+        if (typeof val === "number" && Number.isFinite(val) && val > 0) {
+          const row = document.createElement("div");
+          row.className = "extracted-details-row";
+          const nameSpan = document.createElement("span");
+          nameSpan.textContent = label;
+          const valStrong = document.createElement("strong");
+          valStrong.textContent = money.format(val);
+          row.append(nameSpan, valStrong);
+          box.append(row);
+          count += 1;
+        }
+      }
+      box.hidden = count === 0;
+    }
+
+    function applyExtractedPay(documentType, extraction) {
+      const isMilitary = documentType === "military";
+      const amountSelector = isMilitary ? "#first-amount" : "#second-amount";
+      const frequencySelector = isMilitary ? "#first-frequency" : "#second-frequency";
+      const basisName = isMilitary ? "first-basis" : "second-basis";
+      const columnIndex = isMilitary ? 0 : 1;
+
+      if (!document.querySelector("input[name='comparison-type']:checked")) {
+        const milCivRadio = document.querySelector("input[name='comparison-type'][value='military-civilian']");
+        if (milCivRadio) {
+          milCivRadio.checked = true;
+        }
+      }
+      updateComparisonLabels();
+
+      if (typeof extraction.amount === "number" && Number.isFinite(extraction.amount)) {
+        const amountInput = document.querySelector(amountSelector);
+        amountInput.value = extraction.amount.toFixed(2);
+        amountInput.removeAttribute("aria-invalid");
+        amountInput.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+
+      if (extraction.frequency && frequencies[extraction.frequency]) {
+        const freqSelect = document.querySelector(frequencySelector);
+        freqSelect.value = extraction.frequency;
+        freqSelect.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+
+      if (extraction.basis === "take-home" || extraction.basis === "gross") {
+        const basisRadio = document.querySelector(`input[name='${basisName}'][value='${extraction.basis}']`);
+        if (basisRadio) {
+          basisRadio.checked = true;
+          basisRadio.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      }
+
+      if (extraction.breakdown && typeof extraction.breakdown === "object") {
+        let filledAnyBreakdown = false;
+        for (const key of ["earnings", "allowances", "taxes", "fica", "insurance", "retirement", "other"]) {
+          const val = extraction.breakdown[key];
+          const fields = [...document.querySelectorAll(`[data-breakdown="${key}"]`)];
+          const targetField = fields[columnIndex];
+          if (targetField && typeof val === "number" && Number.isFinite(val)) {
+            targetField.value = val.toFixed(2);
+            targetField.removeAttribute("aria-invalid");
+            filledAnyBreakdown = true;
+          } else if (targetField) {
+            targetField.value = "";
+            targetField.removeAttribute("aria-invalid");
+          }
+        }
+        if (filledAnyBreakdown) {
+          document.querySelector(".breakdown-entry").open = true;
+        }
+      }
+      renderExtractedCardDetails(documentType, extraction);
+      clearAiAnswer();
+    }
+
+    function setupDocumentPicker(inputId, statusId, errorId, documentType) {
+      const input = document.querySelector(inputId);
+      const status = document.querySelector(statusId);
+      const error = document.querySelector(errorId);
+      const detailsBox = document.querySelector(documentType === "military" ? "#military-extracted-details" : "#civilian-extracted-details");
+      const maxFileSize = 10 * 1024 * 1024;
+      input.addEventListener("click", () => {
+        input.value = "";
+      });
+      input.addEventListener("change", async () => {
+        error.hidden = true;
+        error.textContent = "";
+        if (detailsBox) detailsBox.hidden = true;
+        const file = input.files?.[0];
+        if (!file) return;
+
+        const extension = file.name.split(".").pop()?.toLowerCase();
+        if (!["pdf", "png", "jpg", "jpeg", "docx", "txt"].includes(extension)) {
+          input.value = "";
+          error.textContent = "Choose a PDF, DOCX, PNG, JPG, or TXT file.";
+          error.hidden = false;
+          status.textContent = "No document selected.";
+          status.classList.remove("selected");
+          return;
+        }
+        if (file.size > maxFileSize) {
+          input.value = "";
+          error.textContent = "The file must be 10 MB or smaller.";
+          error.hidden = false;
+          status.textContent = "No document selected.";
+          status.classList.remove("selected");
+          return;
+        }
+
+        const sizeLabel = file.size < 1024 * 1024
+          ? `${Math.max(1, Math.round(file.size / 1024))} KB`
+          : `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
+        status.textContent = `Analyzing ${file.name} (${sizeLabel}) to retrieve ${documentType} pay…`;
+        status.classList.add("selected");
+        input.disabled = true;
+
+        try {
+          const dataUrl = await readFileAsDataUrl(file);
+          const apiBase = window.location.protocol === "file:" ? "http://localhost:3000" : "";
+          const response = await fetch(`${apiBase}/api/analyze-pay-document`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              documentType,
+              fileName: file.name,
+              mimeType: file.type || "",
+              dataUrl
+            })
+          });
+          const result = await response.json();
+          if (!response.ok) {
+            throw new Error(result.error || "Could not analyze the uploaded document.");
+          }
+          const extraction = result.extraction;
+          if (!extraction?.found || extraction.amount === null) {
+            error.textContent = extraction?.summary || `Could not find ${documentType} pay figures in ${file.name}.`;
+            error.hidden = false;
+            status.textContent = `Selected: ${file.name} (${sizeLabel}).`;
+            return;
+          }
+          applyExtractedPay(documentType, extraction);
+          status.textContent = `Filled from ${file.name}: ${extraction.summary}`;
+        } catch (err) {
+          error.textContent = err instanceof Error ? err.message : "Could not analyze the uploaded document.";
+          error.hidden = false;
+          status.textContent = `Selected: ${file.name} (${sizeLabel}). Enter amounts manually below.`;
+        } finally {
+          input.disabled = false;
+        }
+      });
+    }
+
+    setupDocumentPicker("#military-document", "#military-document-status", "#military-document-error", "military");
+    setupDocumentPicker("#civilian-document", "#civilian-document-status", "#civilian-document-error", "civilian");
+
+    function getMonthlyAmount(inputId, frequencyId) {
+      const amount = document.querySelector(inputId).valueAsNumber;
+      const frequency = document.querySelector(frequencyId).value;
+      return amount * frequencies[frequency].multiplier;
+    }
+
+    function collectBreakdown() {
+      const categories = [
+        { key: "earnings", label: "Regular pay / hours", positive: true },
+        { key: "allowances", label: "Allowances / extra pay", positive: true },
+        { key: "taxes", label: "Taxes / withholding", positive: false },
+        { key: "fica", label: "Social Security / Medicare", positive: false },
+        { key: "insurance", label: "Insurance / benefits", positive: false },
+        { key: "retirement", label: "Retirement contribution", positive: false },
+        { key: "other", label: "Other deductions", positive: false }
+      ];
+      const rows = [];
+      let invalid = false;
+
+      const parsedCategories = categories.map(category => {
+        const fields = [...document.querySelectorAll(`[data-breakdown="${category.key}"]`)];
+        const values = fields.map(field => field.value === "" ? null : field.valueAsNumber);
+        return { category, fields, values };
+      });
+
+      const anyEarlier = parsedCategories.some(item => item.values[0] !== null);
+      const anyCurrent = parsedCategories.some(item => item.values[1] !== null);
+
+      for (const { category, fields, values } of parsedCategories) {
+        const valuesInvalid = values.some(value => value !== null && (!Number.isFinite(value) || value < 0 || value > 1_000_000));
+        if (valuesInvalid) {
+          fields.forEach(field => field.setAttribute("aria-invalid", "true"));
+          invalid = true;
+          continue;
+        }
+        fields.forEach(field => field.removeAttribute("aria-invalid"));
+        if (!anyEarlier || !anyCurrent) continue;
+        if (values[0] === null && values[1] === null) continue;
+
+        const earlierVal = values[0] ?? 0;
+        const currentVal = values[1] ?? 0;
+        const earlierMonthly = earlierVal * frequencies[document.querySelector("#first-frequency").value].multiplier;
+        const currentMonthly = currentVal * frequencies[document.querySelector("#second-frequency").value].multiplier;
+        const rawChange = currentMonthly - earlierMonthly;
+        rows.push({
+          key: category.key,
+          label: category.label,
+          positive: category.positive,
+          earlierMonthly,
+          currentMonthly,
+          effect: category.positive ? rawChange : -rawChange
+        });
+      }
+
+      document.querySelector("#breakdown-error").hidden = !invalid;
+      return invalid ? null : rows;
+    }
+
+    function renderVerbalSummary({
+      firstLabel,
+      secondLabel,
+      firstAmount,
+      secondAmount,
+      firstFrequency,
+      secondFrequency,
+      firstBasis,
+      secondBasis,
+      firstMonthly,
+      secondMonthly,
+      difference,
+      breakdownRows
+    }) {
+      const container = document.querySelector("#verbal-summary-content");
+      if (!container) return;
+      container.replaceChildren();
+
+      const basisText = firstBasis === secondBasis
+        ? (firstBasis === "take-home" ? "take-home (after deductions)" : "gross (before deductions)")
+        : "mixed basis (one before deductions and one after deductions)";
+      const absDiff = Math.abs(difference);
+      const pctDiff = firstMonthly > 0 ? Math.abs((difference / firstMonthly) * 100).toFixed(1) : null;
+
+      const leadP = document.createElement("p");
+      if (Math.abs(difference) < 0.01) {
+        leadP.innerHTML = `Your <strong>${escapeHtml(secondLabel.toLowerCase())}</strong> (${money.format(secondMonthly)}/month) and <strong>${escapeHtml(firstLabel.toLowerCase())}</strong> (${money.format(firstMonthly)}/month) work out to essentially the same monthly ${escapeHtml(basisText)} amount.`;
+      } else {
+        const direction = difference > 0 ? "higher" : "lower";
+        const pctClause = pctDiff ? ` (${pctDiff}% ${direction})` : "";
+        leadP.innerHTML = `On a 12-month average, your <strong>${escapeHtml(secondLabel.toLowerCase())}</strong> is <strong>${money.format(absDiff)} per month ${direction}</strong>${pctClause} than your <strong>${escapeHtml(firstLabel.toLowerCase())}</strong> — moving from <strong>${money.format(firstMonthly)}/month</strong> down or up to <strong>${money.format(secondMonthly)}/month</strong> in ${escapeHtml(basisText)} pay.`;
+      }
+      container.append(leadP);
+
+      if (secondFrequency === "biweekly" || firstFrequency === "biweekly") {
+        const scheduleP = document.createElement("p");
+        if (secondFrequency === "biweekly") {
+          const twoCheckMonth = secondAmount * 2;
+          const twoCheckDiff = twoCheckMonth - firstMonthly;
+          const twoCheckDir = twoCheckDiff >= 0 ? "higher" : "lower";
+          scheduleP.innerHTML = `<strong>Paycheck timing &amp; cash flow:</strong> Because your ${escapeHtml(secondLabel.toLowerCase())} is paid every two weeks (${money.format(secondAmount)} × 26 checks/year), 10 out of 12 months only have <strong>two paychecks (${money.format(twoCheckMonth)}/month)</strong>, which is <strong>${money.format(Math.abs(twoCheckDiff))}/month ${twoCheckDir}</strong> than your ${escapeHtml(firstLabel.toLowerCase())}. The remaining two months each year have three paychecks (${money.format(secondAmount * 3)}), which brings the 12-month average to ${money.format(secondMonthly)}/month.`;
+        } else {
+          const twoCheckMonth = firstAmount * 2;
+          scheduleP.innerHTML = `<strong>Paycheck timing &amp; cash flow:</strong> Your ${escapeHtml(firstLabel.toLowerCase())} was paid every two weeks (${money.format(twoCheckMonth)} in a typical 2-check month vs. ${money.format(firstMonthly)} averaged across 12 months).`;
+        }
+        container.append(scheduleP);
+      }
+
+      const activeRows = breakdownRows.filter(row => Math.abs(row.effect) >= 0.5 || row.earlierMonthly > 0 || row.currentMonthly > 0);
+      if (activeRows.length) {
+        const driversIntro = document.createElement("p");
+        driversIntro.innerHTML = `<strong>Key drivers behind the ${money.format(absDiff)}/month difference:</strong>`;
+        container.append(driversIntro);
+
+        const list = document.createElement("ul");
+        for (const row of activeRows) {
+          const item = document.createElement("li");
+          const delta = row.currentMonthly - row.earlierMonthly;
+          const absEffect = Math.abs(row.effect);
+          if (row.positive) {
+            if (Math.abs(delta) < 0.5) {
+              item.innerHTML = `<strong>${escapeHtml(row.label)}:</strong> Unchanged at ${money.format(row.currentMonthly)}/month.`;
+            } else if (row.currentMonthly === 0 && row.earlierMonthly > 0) {
+              item.innerHTML = `<strong>${escapeHtml(row.label)}:</strong> Dropped from ${money.format(row.earlierMonthly)}/month to $0/month (for example, military BAH/BAS housing and food allowances ending), reducing monthly pay by <strong>${money.format(absEffect)}/month</strong>.`;
+            } else {
+              const dir = delta > 0 ? "increased" : "decreased";
+              const impact = row.effect > 0 ? "adding" : "reducing";
+              item.innerHTML = `<strong>${escapeHtml(row.label)}:</strong> ${dir === "increased" ? "Increased" : "Decreased"} from ${money.format(row.earlierMonthly)}/month to ${money.format(row.currentMonthly)}/month, ${impact} <strong>${money.format(absEffect)}/month</strong>.`;
+            }
+          } else {
+            if (Math.abs(delta) < 0.5) {
+              item.innerHTML = `<strong>${escapeHtml(row.label)}:</strong> Unchanged at ${money.format(row.currentMonthly)}/month.`;
+            } else {
+              const dir = delta > 0 ? "increased" : "decreased";
+              const impact = row.effect < 0 ? `lowering take-home pay by <strong>${money.format(absEffect)}/month</strong>` : `increasing take-home pay by <strong>${money.format(absEffect)}/month</strong>`;
+              item.innerHTML = `<strong>${escapeHtml(row.label)}:</strong> Deductions ${dir} from ${money.format(row.earlierMonthly)}/month to ${money.format(row.currentMonthly)}/month, ${impact}.`;
+            }
+          }
+          list.append(item);
+        }
+        container.append(list);
+      }
+    }
+
+    function renderBreakdown(rows, overallChange) {
+      const section = document.querySelector("#breakdown-result");
+      const lines = document.querySelector("#breakdown-lines");
+      lines.replaceChildren();
+      if (!rows.length) {
+        section.hidden = true;
+        return;
+      }
+
+      const totalEffect = rows.reduce((sum, row) => sum + row.effect, 0);
+      for (const row of rows) {
+        const line = document.createElement("div");
+        line.className = "breakdown-line";
+        const label = document.createElement("span");
+        label.textContent = row.label;
+        const amount = document.createElement("strong");
+        amount.textContent = `${row.effect > 0 ? "+" : row.effect < 0 ? "−" : ""}${money.format(Math.abs(row.effect))}/month`;
+        line.append(label, amount);
+        lines.append(line);
+      }
+
+      const totalLine = document.createElement("div");
+      totalLine.className = "breakdown-line total";
+      const totalLabel = document.createElement("span");
+      totalLabel.textContent = "Net effect of entered items";
+      const totalAmount = document.createElement("strong");
+      totalAmount.textContent = `${totalEffect > 0 ? "+" : totalEffect < 0 ? "−" : ""}${money.format(Math.abs(totalEffect))}/month`;
+      totalLine.append(totalLabel, totalAmount);
+      lines.append(totalLine);
+
+      const unexplained = overallChange - totalEffect;
+      const remainderLine = document.createElement("div");
+      remainderLine.className = "breakdown-line";
+      const remainderLabel = document.createElement("span");
+      remainderLabel.textContent = "Difference not explained by these entries";
+      const remainderAmount = document.createElement("strong");
+      remainderAmount.textContent = `${unexplained > 0 ? "+" : unexplained < 0 ? "−" : ""}${money.format(Math.abs(unexplained))}/month`;
+      remainderLine.append(remainderLabel, remainderAmount);
+      lines.append(remainderLine);
+      section.hidden = false;
+    }
+
+    function buildComparison() {
+      const firstInput = document.querySelector("#first-amount");
+      const secondInput = document.querySelector("#second-amount");
+      const amounts = [firstInput, secondInput].map(input => input.valueAsNumber);
+      if (amounts.some(amount => !Number.isFinite(amount) || amount < 0 || amount > 1_000_000)) {
+        document.querySelector("#amount-error").hidden = false;
+        [firstInput, secondInput].forEach((input, index) => {
+          if (!Number.isFinite(amounts[index]) || amounts[index] < 0 || amounts[index] > 1_000_000) {
+            input.setAttribute("aria-invalid", "true");
+          } else {
+            input.removeAttribute("aria-invalid");
+          }
+        });
+        return false;
+      }
+
+      const breakdownRows = collectBreakdown();
+      if (breakdownRows === null) return false;
+      document.querySelector("#amount-error").hidden = true;
+      firstInput.removeAttribute("aria-invalid");
+      secondInput.removeAttribute("aria-invalid");
+      const firstFrequency = document.querySelector("#first-frequency").value;
+      const secondFrequency = document.querySelector("#second-frequency").value;
+      const firstMonthly = getMonthlyAmount("#first-amount", "#first-frequency");
+      const secondMonthly = getMonthlyAmount("#second-amount", "#second-frequency");
+      const difference = secondMonthly - firstMonthly;
+      renderBreakdown(breakdownRows, difference);
+
+      document.querySelector("#first-monthly").textContent = money.format(firstMonthly);
+      document.querySelector("#second-monthly").textContent = money.format(secondMonthly);
+      document.querySelector("#monthly-difference").textContent = `${difference > 0 ? "+" : difference < 0 ? "−" : ""}${money.format(Math.abs(difference))}`;
+      document.querySelector("#first-period-note").textContent = `${money.format(amounts[0])} ${frequencies[firstFrequency].label}`;
+      document.querySelector("#second-period-note").textContent = `${money.format(amounts[1])} ${frequencies[secondFrequency].label}`;
+
+      const firstBasis = document.querySelector("input[name='first-basis']:checked").value;
+      const secondBasis = document.querySelector("input[name='second-basis']:checked").value;
+      updateComparisonLabels();
+      const [firstLabel, secondLabel] = comparisonTypes[selectedComparisonType()] || comparisonTypes["military-civilian"];
+      renderVerbalSummary({
+        firstLabel,
+        secondLabel,
+        firstAmount: amounts[0],
+        secondAmount: amounts[1],
+        firstFrequency,
+        secondFrequency,
+        firstBasis,
+        secondBasis,
+        firstMonthly,
+        secondMonthly,
+        difference,
+        breakdownRows
+      });
+      const caveat = firstBasis === secondBasis
+        ? "Monthly amounts are estimates: weekly and every-two-weeks pay are annualized across 12 months. A typical month may have a different number of checks."
+        : "These amounts use different bases—one before deductions and one after. The difference is not a like-for-like comparison; compare both before or both after deductions if you can.";
+      document.querySelector("#comparison-caveat").textContent = caveat;
+
+      const selectedFactors = [...document.querySelectorAll(".factor input:checked")].map(input => input.value);
+      const factorSummary = document.querySelector("#factor-summary");
+      if (selectedFactors.length) {
+        factorSummary.innerHTML = `<strong>Things you may want to verify:</strong> ${selectedFactors.map(escapeHtml).join(", ")}. These are possibilities to check, not a diagnosis.`;
+        factorSummary.hidden = false;
+      } else {
+        factorSummary.hidden = true;
+        factorSummary.textContent = "";
+      }
+
+      document.querySelector("#calculated-result").hidden = false;
+      document.querySelector("#general-answer").hidden = true;
+      document.querySelector("#result-subtitle").textContent = "Monthly estimates based on the amounts and pay schedules you entered.";
+      showStage(3);
+      return true;
+    }
+
+    function showGeneralExplanation() {
+      document.querySelector("#calculated-result").hidden = true;
+      document.querySelector("#general-answer").hidden = false;
+      document.querySelector("#result-subtitle").textContent = "No pay information needed.";
+      showStage(3);
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      })[character]);
+    }
+
+    document.querySelectorAll("input[name='comparison-type']").forEach(input => {
+      input.addEventListener("change", updateComparisonLabels);
+    });
+
+    document.querySelector("#continue-button").addEventListener("click", () => {
+      updateComparisonLabels();
+      showStage(2);
+    });
+    document.querySelector("#general-button").addEventListener("click", showGeneralExplanation);
+    document.querySelector("#compare-button").addEventListener("click", buildComparison);
+    document.querySelector("#skip-details-button").addEventListener("click", showGeneralExplanation);
+    progressSteps.forEach(step => {
+      step.addEventListener("click", () => {
+        const targetStage = Number(step.dataset.progress);
+        if (targetStage === 1) {
+          showStage(1);
+        } else if (targetStage === 2) {
+          updateComparisonLabels();
+          showStage(2);
+        } else if (targetStage === 3) {
+          if (!buildComparison()) {
+            document.querySelector("#amount-error").hidden = true;
+            showGeneralExplanation();
+          }
+        }
+      });
+    });
+    document.querySelectorAll("[data-back]").forEach(button => button.addEventListener("click", () => showStage(activeStage - 1)));
+    document.querySelector("#restart-button").addEventListener("click", () => {
+      document.querySelectorAll("input[type='number'], input[type='file']").forEach(input => {
+        input.value = "";
+        input.removeAttribute("aria-invalid");
+      });
+      document.querySelectorAll(".file-status").forEach(status => {
+        status.textContent = "Optional · PDF, DOCX, image, or TXT · up to 10 MB";
+        status.classList.remove("selected");
+      });
+      document.querySelectorAll(".file-error, .extracted-details").forEach(el => {
+        el.hidden = true;
+        el.textContent = "";
+      });
+      document.querySelector("#pay-change-note").value = "";
+      document.querySelectorAll(".factor input").forEach(input => { input.checked = false; });
+      document.querySelector("#amount-error").hidden = true;
+      showStage(1);
+    });
+  </script>
+</body>
+</html>

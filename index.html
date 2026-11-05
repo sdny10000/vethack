@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f4">
+  <title>Money Moves | Your whole-money picture</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172f36;
+      --muted: #647479;
+      --paper: #f6f7f4;
+      --white: #fff;
+      --line: #e2e8e3;
+      --green: #245e4b;
+      --green-dark: #193f35;
+      --green-light: #edf5ef;
+      --gold: #f2c56b;
+      --blue: #416986;
+      --blue-light: #eef4f8;
+      --orange: #a96835;
+      --orange-light: #fbf2e7;
+      --shadow: 0 12px 32px rgb(23 47 54 / 6%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 85px; }
+    body { margin: 0; background: var(--paper); color: var(--ink); line-height: 1.5; }
+    button, input, a { font: inherit; }
+    a { color: inherit; }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #e8ad41; outline-offset: 3px; }
+
+    .topbar {
+      position: sticky;
+      z-index: 5;
+      top: 0;
+      display: flex;
+      min-height: 68px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      border-bottom: 1px solid var(--line);
+      padding: 10px max(24px, calc((100vw - 1200px) / 2));
+      background: rgb(255 255 255 / 94%);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; font-size: 15px; font-weight: 800; letter-spacing: -.03em; text-decoration: none; }
+    .brand-mark { display: grid; width: 35px; height: 35px; place-items: center; border-radius: 12px; background: var(--green); color: white; font-size: 16px; }
+    .nav { display: flex; align-items: center; gap: 6px; }
+    .nav a { border-radius: 9px; padding: 8px 11px; color: var(--muted); font-size: 12px; font-weight: 700; text-decoration: none; }
+    .nav a:hover { background: var(--green-light); color: var(--green-dark); }
+    .demo-badge { flex: 0 0 auto; border: 1px solid #dce5dc; border-radius: 99px; padding: 6px 10px; color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+
+    main { width: min(1200px, calc(100% - 44px)); margin: 30px auto 58px; }
+    .eyebrow { margin: 0 0 8px; color: var(--green); font-size: 10px; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 10px; font-size: clamp(32px, 4vw, 46px); line-height: 1.08; letter-spacing: -.055em; }
+    h2 { font-size: 19px; line-height: 1.2; letter-spacing: -.03em; }
+    h3 { font-size: 14px; line-height: 1.3; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 325px); align-items: end; gap: 28px; margin: 8px 0 22px; }
+    .hero-copy { max-width: 700px; margin: 0; color: var(--muted); font-size: 14px; }
+    .profile { display: flex; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 15px; padding: 12px 14px; background: var(--white); }
+    .avatar { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #e1eee4; color: var(--green); font-size: 13px; font-weight: 850; }
+    .profile strong, .profile span { display: block; }
+    .profile strong { font-size: 13px; }
+    .profile span { color: var(--muted); font-size: 11px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+    .button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 10px; padding: 9px 13px; background: var(--green); color: white; cursor: pointer; font-size: 12px; font-weight: 800; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease, background .15s ease; }
+    .button:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .button.secondary { border: 1px solid var(--line); background: white; color: var(--ink); }
+    .button.secondary:hover { background: var(--green-light); }
+    .button.gold { background: var(--gold); color: var(--ink); }
+    .button.gold:hover { filter: brightness(.97); }
+    .btn-img { width: 20px; height: 20px; flex: 0 0 20px; border-radius: 6px; object-fit: contain; display: block; }
+    .chip-img { width: 32px; height: 32px; flex: 0 0 32px; border-radius: 9px; object-fit: contain; display: block; box-shadow: 0 2px 6px rgb(23 47 54 / 8%); }
+
+    .urgent {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 22px;
+      margin: 0 0 16px;
+      border-radius: 17px;
+      padding: 18px 22px;
+      background: var(--green-dark);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+    .urgent .eyebrow { color: #b7d8c6; }
+    .urgent h2 { margin: 0 0 5px; font-size: 17px; }
+    .urgent p { max-width: 830px; margin: 0; color: #e0ebe4; font-size: 12px; }
+    .urgent .button { background: var(--gold); color: var(--ink); white-space: nowrap; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .stat { border: 1px solid var(--line); border-radius: 14px; padding: 15px 16px; background: var(--white); }
+    .stat-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 11px; font-weight: 700; }
+    .stat-icon { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 8px; background: var(--green-light); color: var(--green); font-size: 12px; }
+    .stat-value { display: block; margin-top: 9px; font-size: clamp(19px, 2.2vw, 25px); font-weight: 850; letter-spacing: -.045em; }
+    .stat-foot { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin: 34px 0 14px; }
+    .section-heading h2 { margin: 0 0 4px; font-size: 22px; }
+    .section-heading p { margin: 0; color: var(--muted); font-size: 12px; }
+    .section-kicker { color: var(--green); font-size: 10px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    .card { min-width: 0; border: 1px solid var(--line); border-radius: 16px; padding: 19px; background: var(--white); box-shadow: var(--shadow); }
+    .card-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+    .card-title h3 { margin: 0 0 4px; font-size: 15px; }
+    .card-title p { margin: 0; color: var(--muted); font-size: 11px; }
+    .pill { border-radius: 99px; padding: 4px 8px; background: var(--green-light); color: var(--green); font-size: 9px; font-weight: 850; white-space: nowrap; }
+    .pill.amber { background: var(--orange-light); color: #875522; }
+    .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr); gap: 16px; align-items: start; }
+
+    .cash-card { grid-row: span 2; }
+    .cash-head { display: flex; align-items: end; justify-content: space-between; gap: 14px; margin-bottom: 12px; }
+    .cash-head .caption { color: var(--muted); font-size: 11px; }
+    .cash-total { font-size: 24px; font-weight: 850; letter-spacing: -.045em; }
+    .cash-total.negative { color: #a44336; }
+    .cash-row { display: grid; grid-template-columns: minmax(0, 1fr) 108px; align-items: center; gap: 12px; border-top: 1px solid #edf0ed; padding: 9px 0; }
+    .cash-row label { font-size: 12px; }
+    .cash-row label span { display: block; color: var(--muted); font-size: 10px; }
+    .amount-field { position: relative; }
+    .amount-field::before { position: absolute; top: 7px; left: 9px; color: var(--muted); content: "$"; font-size: 11px; }
+    .amount-field input { width: 100%; height: 31px; border: 1px solid #dfe6e0; border-radius: 8px; padding: 4px 7px 4px 20px; color: var(--ink); font-size: 12px; font-weight: 750; text-align: right; }
+    .amount-field input:focus { border-color: var(--green); }
+    .cash-footer { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); margin-top: 7px; padding-top: 12px; font-size: 12px; }
+    .cash-footer strong { font-size: 15px; }
+    .cash-workflow { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 14px; margin: 0 0 16px; border: 1px solid #d5e3d8; border-radius: 14px; padding: 15px 17px; background: var(--green-light); }
+    .cash-workflow[hidden], .cash-scenario[hidden] { display: none; }
+    .cash-workflow strong { color: var(--green-dark); }
+    .cash-workflow p { margin: 3px 0 0; color: #536960; font-size: 11px; }
+    .cash-workflow .cash-workflow-result { color: var(--ink); font-size: 15px; font-weight: 850; }
+    .cash-workflow-actions { display: grid; gap: 7px; }
+    .cash-workflow-actions .button { min-height: 36px; justify-self: start; font-size: 10px; }
+    .cash-workflow-savings { display: grid; grid-template-columns: minmax(125px, 1fr) 100px; align-items: center; gap: 8px; color: var(--green-dark); font-size: 10px; font-weight: 750; }
+    .cash-workflow-savings span { color: var(--muted); font-weight: 500; }
+    .cash-workflow-savings input { width: 100%; height: 34px; border: 1px solid #cbd9ce; border-radius: 8px; padding: 5px 8px; background: white; color: var(--ink); font-size: 12px; font-weight: 750; text-align: right; }
+    .cash-scenario { grid-column: 1 / -1; border-top: 1px solid #d5e3d8; padding-top: 11px; }
+    .cash-scenario p { margin: 0; }
+    .cash-scenario strong { font-size: 12px; }
+    .validation { min-height: 16px; margin: 5px 0 0; color: #a44336; font-size: 10px; }
+    .cash-note { margin: 12px 0 0; color: var(--muted); font-size: 10px; }
+
+    .snapshot-list { display: grid; gap: 8px; }
+    .snapshot-item { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #edf0ed; padding: 7px 0; font-size: 11px; }
+    .snapshot-item:last-child { border-bottom: 0; }
+    .snapshot-item span { color: var(--muted); }
+    .snapshot-item strong { text-align: right; }
+    .debt-callout { margin-top: 12px; border-radius: 11px; padding: 11px; background: var(--orange-light); color: #72512f; font-size: 10px; }
+    .debt-callout strong { color: #513916; }
+
+    .goal-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .goal-fields label { color: var(--muted); font-size: 10px; font-weight: 700; }
+    .goal-fields input { display: block; width: 100%; height: 35px; margin-top: 4px; border: 1px solid #dfe6e0; border-radius: 8px; padding: 6px 9px; color: var(--ink); font-size: 12px; }
+    .goal-result { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; border-radius: 11px; padding: 10px 12px; background: var(--blue-light); color: #385b72; font-size: 11px; }
+    .goal-result strong { font-size: 14px; }
+    .goal-result.invalid { background: var(--orange-light); color: #825221; }
+
+    .money-map { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .map-card { min-height: 148px; border: 1px solid var(--line); border-radius: 14px; padding: 15px; background: white; }
+    .map-icon { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 9px; margin-bottom: 12px; background: var(--green-light); color: var(--green); font-size: 14px; }
+    .map-card:nth-child(3n + 2) .map-icon { background: var(--blue-light); color: var(--blue); }
+    .map-card:nth-child(3n) .map-icon { background: var(--orange-light); color: var(--orange); }
+    .map-card h3 { margin: 0 0 5px; font-size: 13px; }
+    .map-card p { margin: 0; color: var(--muted); font-size: 10px; }
+    .map-card .known { display: inline-block; margin-top: 9px; color: var(--green); font-size: 9px; font-weight: 800; }
+
+    .transition-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(285px, .72fr); gap: 16px; }
+    .checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .checklist label { display: flex; align-items: flex-start; gap: 9px; border: 1px solid #edf0ed; border-radius: 10px; padding: 10px; cursor: pointer; font-size: 11px; }
+    .checklist input { width: 16px; height: 16px; flex: 0 0 auto; margin: 1px 0 0; accent-color: var(--green); }
+    .checklist label:has(input:checked) { background: var(--green-light); }
+    .checklist label:has(input:checked) span { color: var(--muted); text-decoration: line-through; }
+    .resource-box { border-radius: 12px; padding: 15px; background: #f3f6f2; }
+    .resource-box h3 { margin: 0 0 5px; }
+    .resource-box p { margin: 0 0 10px; color: var(--muted); font-size: 11px; }
+    .resource-box p:last-child { margin-bottom: 0; }
+    .resource-box .eyebrow { color: var(--green); }
+
+    .ask-card { display: block; border: 0; padding: 23px; background: #eaf1ed; }
+    .ask-intro h2 { margin: 0 0 7px; font-size: 21px; }
+    .ask-intro p { margin: 0; color: #536960; font-size: 12px; }
+    .ask-examples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 14px 0 18px; }
+    .question-chip { display: flex; align-items: center; gap: 11px; min-height: 54px; border: 1px solid #cfddd1; border-radius: 12px; padding: 9px 13px; background: rgb(255 255 255 / 88%); color: var(--green-dark); cursor: pointer; font-size: 11.5px; font-weight: 750; text-align: left; transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease; }
+    .question-chip:hover, .question-chip[aria-pressed="true"] { border-color: var(--green); background: white; box-shadow: inset 3px 0 var(--green), 0 6px 16px rgb(23 47 54 / 7%); transform: translateY(-1px); }
+    .ask-panel { min-width: 0; max-width: 850px; }
+    .input-label { display: block; margin-bottom: 6px; color: var(--green-dark); font-size: 11px; font-weight: 800; }
+    .ask-form { display: grid; gap: 8px; }
+    .ask-form textarea { width: 100%; min-height: 92px; resize: vertical; border: 1px solid #cbd9ce; border-radius: 10px; padding: 10px 11px; background: white; color: var(--ink); font: inherit; font-size: 12px; }
+    .ask-form .button { justify-self: start; }
+    .answer { margin-top: 10px; border: 1px solid #d8e3da; border-radius: 11px; padding: 13px; background: white; }
+    .answer h3 { margin: 0 0 5px; font-size: 13px; }
+    .answer p { margin: 0; color: #43565b; font-size: 11px; white-space: pre-line; }
+    .answer-step, .answer-human { margin-top: 11px; border-radius: 9px; padding: 10px; background: var(--green-light); }
+    .answer-human { background: #f3f5f2; }
+    .answer-step strong, .answer-human strong { display: block; margin-bottom: 3px; font-size: 10px; }
+    .answer-step p, .answer-human p { font-size: 10px; }
+    .answer-source { display: block; margin-top: 9px; color: var(--green); font-size: 9px; font-weight: 800; }
+    .answer-hint { color: var(--muted) !important; }
+    .paycheck-workflow { margin-top: 10px; border: 1px solid #d8e3da; border-radius: 12px; padding: 15px; background: white; }
+    .paycheck-workflow[hidden] { display: none; }
+    .paycheck-workflow-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .paycheck-workflow-head h3 { margin: 0 0 4px; font-size: 15px; }
+    .paycheck-workflow-head p { color: var(--muted); }
+    .pay-compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .pay-compare-card { border: 1px solid var(--line); border-radius: 10px; padding: 11px; background: #fbfcfa; }
+    .pay-compare-card span, .pay-compare-card strong { display: block; }
+    .pay-compare-card span { color: var(--muted); font-size: 10px; }
+    .pay-compare-card strong { margin-top: 3px; font-size: 19px; letter-spacing: -.04em; }
+    .pay-compare-card small { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; }
+    .paycheck-note { margin: 10px 0 0 !important; border-radius: 9px; padding: 9px 10px; background: var(--blue-light); color: #385b72 !important; font-size: 10px !important; }
+    .paycheck-workflow h4 { margin: 15px 0 7px; color: var(--green-dark); font-size: 11px; }
+    .pay-period-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .pay-period-option { display: flex; align-items: flex-start; gap: 8px; border: 1px solid var(--line); border-radius: 9px; padding: 9px; cursor: pointer; }
+    .pay-period-option:has(input:checked) { border-color: var(--green); background: var(--green-light); }
+    .pay-period-option input { margin: 2px 0 0; accent-color: var(--green); }
+    .pay-period-option strong, .pay-period-option span { display: block; }
+    .pay-period-option strong { font-size: 10px; }
+    .pay-period-option span { margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .pay-period-value { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 9px; border-radius: 9px; padding: 10px; background: #f3f5f2; font-size: 10px; }
+    .pay-period-value strong { color: var(--green-dark); font-size: 16px; }
+    .paycheck-workflow details { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 9px; }
+    .paycheck-workflow details summary { color: var(--green-dark); cursor: pointer; font-size: 10px; font-weight: 800; }
+    .deduction-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 8px 0 0; padding: 0; list-style: none; }
+    .deduction-list li { border-radius: 7px; padding: 7px; background: #f6f7f4; color: #536960; font-size: 9px; }
+    .paycheck-next-step { margin: 10px 0 0 !important; font-size: 10px !important; }
+    .paycheck-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+    .paycheck-actions .button { min-height: 36px; font-size: 10px; }
+    .paycheck-confirmation { margin: 8px 0 0 !important; color: var(--green-dark) !important; font-size: 10px !important; font-weight: 750; }
+    .follow-up { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 11px; }
+    .follow-up > strong { display: block; margin-bottom: 7px; color: var(--green-dark); font-size: 10px; }
+    .follow-up .question-chip { display: inline-flex; min-height: 38px; margin: 0 6px 6px 0; padding: 6px 11px; gap: 8px; }
+    .follow-up .chip-img { width: 22px; height: 22px; flex: 0 0 22px; border-radius: 6px; }
+    .ai-note { margin: 9px 0 0; color: #586b61; font-size: 9px; }
+
+    .timeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .timeline-item { display: flex; gap: 10px; border: 1px solid var(--line); border-radius: 11px; padding: 11px; background: white; }
+    .timeline-date { flex: 0 0 auto; color: var(--green); font-size: 10px; font-weight: 850; }
+    .timeline-item strong { display: block; font-size: 10px; }
+    .timeline-item span { display: block; margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .calendar-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 11px; }
+    .calendar-row p { margin: 0; color: var(--muted); font-size: 10px; }
+
+    .disclaimer { margin-top: 22px; border: 1px solid #e8dec8; border-radius: 12px; padding: 13px 15px; background: #fffaf0; color: #65573e; font-size: 10px; }
+    .disclaimer strong { color: var(--ink); }
+    .more-details { margin-top: 18px; border: 1px solid var(--line); border-radius: 15px; background: white; box-shadow: var(--shadow); }
+    .more-details > summary, .edit-details > summary { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 16px; color: var(--green-dark); cursor: pointer; font-size: 12px; font-weight: 800; list-style: none; }
+    .more-details > summary::-webkit-details-marker, .edit-details > summary::-webkit-details-marker { display: none; }
+    .more-details > summary::after, .edit-details > summary::after { color: var(--green); content: "+"; font-size: 18px; }
+    .more-details[open] > summary::after, .edit-details[open] > summary::after { content: "−"; }
+    .more-content { border-top: 1px solid var(--line); padding: 4px 16px 16px; }
+    .more-content .section-heading { margin-top: 22px; }
+    .edit-details { margin-top: 13px; border: 1px solid var(--line); border-radius: 10px; }
+    .edit-details > summary { min-height: 40px; padding: 9px 11px; font-size: 11px; }
+    .edit-content { border-top: 1px solid var(--line); padding: 5px 11px 9px; }
+    .summary-money { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 11px 0 5px; }
+    .summary-money div { border-radius: 10px; padding: 10px; background: #f5f7f4; }
+    .summary-money span, .summary-money strong { display: block; }
+    .summary-money span { color: var(--muted); font-size: 10px; }
+    .summary-money strong { margin-top: 3px; font-size: 15px; }
+    .simple-note { margin: 9px 0 0; color: var(--muted); font-size: 10px; }
+    .letter-facts { display: grid; gap: 9px; }
+    .letter-facts p { margin: 0; color: var(--muted); font-size: 11px; }
+    .letter-facts strong { color: var(--ink); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+
+    @media (max-width: 900px) {
+      .topbar { padding-right: 20px; padding-left: 20px; }
+      .nav a { padding: 7px; }
+      main { width: min(100% - 32px, 760px); }
+      .dashboard-grid { grid-template-columns: 1fr 1fr; }
+      .cash-card { grid-column: 1 / -1; grid-row: auto; }
+      .money-map { grid-template-columns: repeat(2, 1fr); }
+      .transition-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .topbar { min-height: 60px; flex-wrap: wrap; gap: 8px; padding: 9px 14px; }
+      .nav { order: 3; width: 100%; justify-content: space-between; overflow-x: auto; }
+      .nav a { white-space: nowrap; }
+      .demo-badge { margin-left: auto; font-size: 8px; }
+      main { width: calc(100% - 24px); margin-top: 20px; }
+      .hero { grid-template-columns: 1fr; gap: 15px; }
+      .profile { max-width: 100%; }
+      .urgent { grid-template-columns: 1fr; gap: 13px; padding: 17px; }
+      .urgent .button { justify-self: start; }
+      .stat-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .stat { padding: 12px; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .cash-card { grid-column: auto; }
+      .money-map { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .map-card { min-height: 155px; padding: 12px; }
+      .checklist { grid-template-columns: 1fr; }
+      .ask-card { padding: 17px; }
+      .ask-examples { grid-template-columns: 1fr; }
+      .timeline { grid-template-columns: 1fr; }
+      .calendar-row { align-items: flex-start; flex-direction: column; }
+      .cash-row { grid-template-columns: minmax(0, 1fr) 92px; }
+      .cash-workflow { grid-template-columns: 1fr; }
+      .cash-scenario { grid-column: auto; }
+      .pay-period-options { grid-template-columns: 1fr; }
+      .deduction-list { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#overview" aria-label="Money Moves home"><span class="brand-mark" aria-hidden="true">M</span> Money Moves</a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#ask">Choose a question</a>
+      <a href="#cash-flow">Monthly money</a>
+      <a href="#letter-details">Letter</a>
+      <a href="#more-money">More topics</a>
+    </nav>
+    <span class="demo-badge">Fictional demo · Kit 02</span>
+  </header>
+
+  <main>
+    <section class="hero" id="overview" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Money after service</p>
+        <h1 id="page-title">Start with what’s on your mind.</h1>
+        <p class="hero-copy">Pick a money question, get a clear next step, then see the monthly picture. Use Chris’s sample or explore a question that fits your own transition.</p>
+        <div class="hero-actions">
+          <a class="button" href="#ask"><img class="btn-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='10' fill='%23ffffff' fill-opacity='0.18'/%3E%3Ccircle cx='18' cy='18' r='10' fill='none' stroke='%23f2c56b' stroke-width='2.4'/%3E%3Cpath d='M18 13v8m0 0l-3.5-3.5M18 21l3.5-3.5' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"><span>Choose a question</span> <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      <div class="profile" aria-label="Fictional veteran profile">
+        <div class="avatar" aria-hidden="true">CO</div>
+        <div><strong>Chris Ortiz</strong><span>Army veteran · new civilian job · transition snapshot</span></div>
+      </div>
+    </section>
+
+    <section id="ask" aria-labelledby="ask-title">
+      <div class="section-heading">
+        <div><span class="section-kicker">Step 1 · Pick a question</span><h2 id="ask-title">What money question do you have?</h2><p>Choose a question to get started. The sample answers use Chris’s fictional case; your own question may need more details.</p></div>
+      </div>
+      <div class="card ask-card">
+        <div class="ask-intro">
+          <div class="ask-examples" aria-label="Questions about common veteran money concerns">
+            <button class="question-chip" type="button" data-example="Why was Chris's first civilian paycheck smaller than his Army pay?" data-workflow="paycheck"><img class="chip-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23dceee3'/%3E%3Crect x='7' y='11' width='26' height='18' rx='3.5' fill='%23245e4b'/%3E%3Ccircle cx='20' cy='20' r='4.2' fill='%23f2c56b'/%3E%3Cpath d='M11 16h2m14 8h2' stroke='%23ffffff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"><span>Why did my paycheck change after service?</span></button>
+            <button class="question-chip" type="button" data-example="How much comes in and goes out in Chris's monthly budget?" data-workflow="cash-flow"><img class="chip-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23e1edf6'/%3E%3Cpath d='M13 27V15m0 0l-3.5 3.5M13 15l3.5 3.5' stroke='%23245e4b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M27 13v12m0 0l-3.5-3.5M27 25l3.5-3.5' stroke='%23a96835' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"><span>How much money comes in and goes out?</span></button>
+            <button class="question-chip" type="button" data-example="What should Chris do about the collection letter and phone-return receipt?"><img class="chip-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23faecd8'/%3E%3Crect x='8' y='11' width='24' height='18' rx='3' fill='%23ffffff' stroke='%23a96835' stroke-width='2.2'/%3E%3Cpath d='M9 13l11 8 11-8' fill='none' stroke='%23a96835' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='12' r='4.5' fill='%23d96b43'/%3E%3C/svg%3E"><span>What should I do about a collection letter?</span></button>
+            <button class="question-chip" type="button" data-example="What is one next step if I'm not sure what to tackle first after leaving the Army?"><img class="chip-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23dceee3'/%3E%3Ccircle cx='20' cy='20' r='11' fill='%23ffffff' stroke='%23245e4b' stroke-width='2.2'/%3E%3Cpolygon points='24.5,15.5 18,18 15.5,24.5 22,22' fill='%23a96835' stroke='%23245e4b' stroke-width='1.2'/%3E%3C/svg%3E"><span>What should I tackle first?</span></button>
+            <button class="question-chip" type="button" data-example="How can I check my VA benefits after leaving service?"><img class="chip-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23e1edf6'/%3E%3Cpath d='M20 8l10 4v7.5c0 6.5-4.3 11.4-10 13.5-5.7-2.1-10-7-10-13.5V12l10-4z' fill='%23416986'/%3E%3Cpolygon points='20,13.5 21.8,17.2 25.8,17.7 22.9,20.5 23.6,24.5 20,22.6 16.4,24.5 17.1,20.5 14.2,17.7 18.2,17.2' fill='%23f2c56b'/%3E%3C/svg%3E"><span>How do I check my VA benefits?</span></button>
+            <button class="question-chip" type="button" data-example="How can I check health coverage after leaving service?"><img class="chip-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23dceee3'/%3E%3Crect x='9' y='9' width='22' height='22' rx='6' fill='%23ffffff' stroke='%23245e4b' stroke-width='2'/%3E%3Cpath d='M20 14v12M14 20h12' stroke='%23245e4b' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"><span>What should I check about health coverage?</span></button>
+            <button class="question-chip" type="button" data-example="What should I ask about my TSP and new 401(k)?"><img class="chip-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23faecd8'/%3E%3Crect x='10' y='22' width='4.5' height='8' rx='1.5' fill='%23a96835'/%3E%3Crect x='17.5' y='17' width='4.5' height='13' rx='1.5' fill='%23416986'/%3E%3Crect x='25' y='11' width='4.5' height='19' rx='1.5' fill='%23245e4b'/%3E%3C/svg%3E"><span>What happens to my retirement plan?</span></button>
+            <button class="question-chip" type="button" data-example="How can I make a savings plan during transition?"><img class="chip-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23dceee3'/%3E%3Ccircle cx='20' cy='22' r='9' fill='%23245e4b'/%3E%3Ccircle cx='20' cy='11' r='3.5' fill='%23f2c56b'/%3E%3Cpath d='M16.5 22h7' stroke='%23f2c56b' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E"><span>How can I plan for savings?</span></button>
+            <button class="question-chip" type="button" data-example="How can I understand my credit card debt during transition?"><img class="chip-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23e1edf6'/%3E%3Crect x='7' y='11' width='26' height='18' rx='3.5' fill='%23416986'/%3E%3Crect x='7' y='15.5' width='26' height='4' fill='%23172f36'/%3E%3Crect x='11' y='23' width='7' height='2.5' rx='1' fill='%23f2c56b'/%3E%3C/svg%3E"><span>How do I understand my credit-card balance?</span></button>
+          </div>
+        </div>
+        <div class="ask-panel">
+          <form class="ask-form" id="question-form">
+            <label class="sr-only" for="question-input">Paste a document or describe what is confusing</label>
+            <textarea id="question-input" maxlength="6000" placeholder="Paste text from a document or describe what’s going on…" required></textarea>
+            <button class="button gold" type="submit"><img class="btn-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='10' fill='%23172f36' fill-opacity='0.12'/%3E%3Cpath d='M18 7l2.6 6.9L27.5 16.5l-6.9 2.6L18 26l-2.6-6.9L8.5 16.5l6.9-2.6L18 7z' fill='%23172f36'/%3E%3C/svg%3E"><span id="submit-button-label">Explain my question</span></button>
+          </form>
+          <section class="paycheck-workflow" id="paycheck-workflow" aria-labelledby="paycheck-workflow-title" hidden>
+            <div class="paycheck-workflow-head">
+              <div><h3 id="paycheck-workflow-title" tabindex="-1">Why the amount changed</h3><p>Military and civilian pay are built differently. Here’s the sample side by side.</p></div>
+              <span class="pill">Chris’s demo</span>
+            </div>
+            <div class="pay-compare">
+              <div class="pay-compare-card"><span>Army net pay</span><strong>$5,617.97</strong><small>Per month in the case</small></div>
+              <div class="pay-compare-card"><span>Civilian take-home</span><strong>$1,766.39</strong><small>Every two weeks · 26 checks a year</small></div>
+            </div>
+            <p class="paycheck-note">The Army amount included $2,576 in tax-free housing and food allowances. Civilian take-home has different taxes and deductions, so this isn’t an apples-to-apples comparison of total compensation.</p>
+
+            <h4>Which amount should we use to plan your month?</h4>
+            <div class="pay-period-options" role="radiogroup" aria-label="Choose a monthly planning amount">
+              <label class="pay-period-option"><input type="radio" name="pay-period" value="typical"><span><strong>Typical 2-check month</strong><span>Two checks; easier for regular bills</span></span></label>
+              <label class="pay-period-option"><input type="radio" name="pay-period" value="average" checked><span><strong>Monthly average</strong><span>All 26 checks spread across 12 months</span></span></label>
+            </div>
+            <div class="pay-period-value"><span id="pay-period-description">Average take-home per month</span><strong id="pay-period-amount">$3,827.18</strong></div>
+
+            <details>
+              <summary>What deductions are on the civilian check?</summary>
+              <ul class="deduction-list">
+                <li>Federal and New Jersey income tax</li>
+                <li>Social Security and Medicare (FICA)</li>
+                <li>Health and dental insurance</li>
+                <li>401(k) contribution</li>
+              </ul>
+              <p class="simple-note">Ask payroll to explain the exact amount of any deduction. The demo doesn’t estimate individual taxes or benefits.</p>
+            </details>
+            <p class="paycheck-next-step"><strong>One useful next step:</strong> Ask payroll to walk through one deduction you don’t recognize on your pay stub.</p>
+            <div class="paycheck-actions">
+              <button class="button" id="use-paycheck-income" type="button"><img class="btn-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='10' fill='%23ffffff' fill-opacity='0.18'/%3E%3Cpath d='M10 18.5l5.2 5.2L26.5 12.5' fill='none' stroke='%23f2c56b' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"><span>Use this amount in my monthly plan</span></button>
+              <button class="button secondary" id="ask-deduction-question" type="button"><img class="btn-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='10' fill='%23dceee3'/%3E%3Ccircle cx='18' cy='18' r='10' fill='%23245e4b'/%3E%3Cpath d='M15.8 14.8a2.5 2.5 0 0 1 4.6 1.3c0 1.7-2.4 2-2.4 3.6m.1 3.5h.01' fill='none' stroke='%23ffffff' stroke-width='2.3' stroke-linecap='round'/%3E%3C/svg%3E"><span>Help me understand a deduction</span></button>
+            </div>
+            <p class="paycheck-confirmation" id="paycheck-confirmation" role="status" aria-live="polite" hidden></p>
+          </section>
+          <div class="answer" id="answer" role="status" aria-live="polite">
+            <h3 id="answer-heading">Choose a question to see your next step</h3>
+            <p class="answer-hint" id="answer-text">You’ll get a plain-language explanation, one small step for this week, and a place to find a real person for bigger questions.</p>
+            <div class="answer-step" id="answer-step-box" hidden><strong>One small step this week</strong><p id="answer-step"></p></div>
+            <div class="answer-human" id="answer-human-box" hidden><strong>Where to find a real person</strong><p id="answer-human"></p></div>
+            <span class="answer-source" id="answer-source"></span>
+            <div class="follow-up" id="follow-up" hidden>
+              <strong>What else would you like to explore?</strong>
+              <div id="follow-up-options"></div>
+              <button class="question-chip" id="save-extra-button" type="button"><img class="chip-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23dceee3'/%3E%3Ccircle cx='20' cy='20' r='10' fill='%23245e4b'/%3E%3Cpath d='M20 15v10M15 20h10' stroke='%23f2c56b' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E"><span>What if I save an extra $50 a month?</span></button>
+              <button class="question-chip" id="ask-another-button" type="button"><img class="chip-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23e1edf6'/%3E%3Cpath d='M11 13h18a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H18l-6 4v-4h-1a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3z' fill='%23416986'/%3E%3Ccircle cx='16' cy='20.5' r='1.6' fill='%23ffffff'/%3E%3Ccircle cx='20' cy='20.5' r='1.6' fill='%23ffffff'/%3E%3Ccircle cx='24' cy='20.5' r='1.6' fill='%23ffffff'/%3E%3C/svg%3E"><span>Ask another question</span></button>
+            </div>
+          </div>
+          <p class="ai-note">Chris’s details and local organizations are fictional. Don’t paste real personal or account information.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="stat-grid" aria-label="Monthly money at a glance">
+      <div class="stat"><span class="stat-label">Coming in <span class="stat-icon" aria-hidden="true">$</span></span><strong class="stat-value" id="stat-income">$3,827</strong><span class="stat-foot">Average take-home per month</span></div>
+      <div class="stat"><span class="stat-label">Going out <span class="stat-icon" aria-hidden="true">↘</span></span><strong class="stat-value" id="stat-spending">$3,082</strong><span class="stat-foot">Listed monthly bills</span></div>
+      <div class="stat"><span class="stat-label">Left over <span class="stat-icon" aria-hidden="true">◎</span></span><strong class="stat-value" id="stat-leftover">$745</strong><span class="stat-foot">Before costs not listed here</span></div>
+    </section>
+
+    <section id="cash-flow" aria-labelledby="cash-flow-title">
+      <div class="section-heading">
+        <div><span class="section-kicker">Step 2 · See monthly money</span><h2 id="cash-flow-title">What comes in and goes out</h2><p>Chris’s sample monthly picture. Change the amounts to explore; nothing is saved.</p></div>
+      </div>
+      <div class="cash-workflow" id="cash-flow-workflow" role="region" aria-label="Your monthly cash-flow walkthrough" tabindex="-1" hidden>
+        <div>
+          <strong>Your monthly snapshot</strong>
+          <p class="cash-workflow-result" id="cash-workflow-result"></p>
+          <p id="cash-workflow-note">This is what remains after listed bills—not necessarily extra spending money. Remember irregular and unlisted costs.</p>
+        </div>
+        <div class="cash-workflow-actions">
+          <div class="cash-workflow-savings"><label for="workflow-monthly-savings">Current savings plan <span>per month</span></label><input id="workflow-monthly-savings" type="number" min="0" max="1000000" step="10" value="100" inputmode="decimal"></div>
+          <button class="button secondary" id="edit-cash-flow-button" type="button"><img class="btn-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='10' fill='%23dceee3'/%3E%3Cpath d='M22.5 9.5l4 4L15 25l-5.5 1.5L11 21l11.5-11.5z' fill='%23245e4b'/%3E%3C/svg%3E"><span>Review or change amounts</span></button>
+          <button class="button" id="show-cash-scenario-button" type="button"><img class="btn-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='10' fill='%23ffffff' fill-opacity='0.18'/%3E%3Cpath d='M9 24l6-6 4 4 8-9m0 0h-5m5 0v5' fill='none' stroke='%23f2c56b' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"><span>What if I save $50 more?</span></button>
+        </div>
+        <div class="cash-scenario" id="cash-scenario" role="status" aria-live="polite" hidden>
+          <p id="cash-scenario-result"></p>
+        </div>
+      </div>
+      <div class="dashboard-grid">
+        <section class="card cash-card" aria-labelledby="cash-title">
+          <div class="card-title"><div><h3 id="cash-title">The simple monthly picture</h3><p>Take-home pay minus listed bills.</p></div><span class="pill">Demo</span></div>
+          <div class="cash-head"><span class="caption">Estimated amount left</span><strong class="cash-total" id="cash-total">$745</strong></div>
+          <div class="summary-money" aria-label="Monthly income and expenses">
+            <div><span>Take-home</span><strong id="income-total">$3,827</strong></div>
+            <div><span>Listed bills</span><strong id="spending-total">$3,082</strong></div>
+            <div><span>Left over</span><strong id="leftover-total">$745</strong></div>
+          </div>
+          <details class="edit-details">
+            <summary>Edit monthly amounts</summary>
+            <div class="edit-content">
+          <div class="cash-row"><label for="income-input">Take-home income<span>Biweekly check × 26 ÷ 12</span></label><div class="amount-field"><input id="income-input" type="number" min="0" max="1000000" step="0.01" value="3827.18" inputmode="decimal"></div></div>
+          <div class="cash-row"><label for="rent-input">Rent</label><div class="amount-field"><input id="rent-input" data-expense type="number" min="0" max="1000000" step="0.01" value="1450" inputmode="decimal"></div></div>
+          <div class="cash-row"><label for="car-input">Car payment</label><div class="amount-field"><input id="car-input" data-expense type="number" min="0" max="1000000" step="0.01" value="385" inputmode="decimal"></div></div>
+          <div class="cash-row"><label for="insurance-input">Car insurance</label><div class="amount-field"><input id="insurance-input" data-expense type="number" min="0" max="1000000" step="0.01" value="142" inputmode="decimal"></div></div>
+          <div class="cash-row"><label for="groceries-input">Groceries</label><div class="amount-field"><input id="groceries-input" data-expense type="number" min="0" max="1000000" step="0.01" value="520" inputmode="decimal"></div></div>
+          <div class="cash-row"><label for="gas-input">Gas / transportation</label><div class="amount-field"><input id="gas-input" data-expense type="number" min="0" max="1000000" step="0.01" value="180" inputmode="decimal"></div></div>
+          <div class="cash-row"><label for="utilities-input">Electric &amp; internet</label><div class="amount-field"><input id="utilities-input" data-expense type="number" min="0" max="1000000" step="0.01" value="160" inputmode="decimal"></div></div>
+          <div class="cash-row"><label for="phone-input">Phone</label><div class="amount-field"><input id="phone-input" data-expense type="number" min="0" max="1000000" step="0.01" value="85" inputmode="decimal"></div></div>
+          <div class="cash-row"><label for="debt-payment-input">Credit card minimum</label><div class="amount-field"><input id="debt-payment-input" data-expense type="number" min="0" max="1000000" step="0.01" value="75" inputmode="decimal"></div></div>
+          <div class="cash-row"><label for="streaming-input">Streaming</label><div class="amount-field"><input id="streaming-input" data-expense type="number" min="0" max="1000000" step="0.01" value="45" inputmode="decimal"></div></div>
+          <div class="cash-row"><label for="gym-input">Gym</label><div class="amount-field"><input id="gym-input" data-expense type="number" min="0" max="1000000" step="0.01" value="40" inputmode="decimal"></div></div>
+          <div class="cash-footer"><span>Total listed spending</span><strong id="spending-edit-total">$3,082</strong></div>
+          <p class="validation" id="cash-error" role="status" aria-live="polite"></p>
+            </div>
+          </details>
+          <p class="simple-note">A biweekly check is not a monthly check. This estimate averages 26 paychecks over 12 months. Irregular expenses are not included.</p>
+        </section>
+
+        <section class="card" id="letter-details" aria-labelledby="obligations-title">
+          <div class="card-title"><div><h3 id="obligations-title">The phone letter</h3><p>Two dates, and a receipt to bring.</p></div><span class="pill amber">Ask for help</span></div>
+          <div class="letter-facts">
+            <p><strong>Nov 14:</strong> The letter’s $899 settlement offer ends.</p>
+            <p><strong>Dec 4:</strong> The letter’s stated dispute deadline.</p>
+            <p><strong>Bring:</strong> The letter and July 28 phone-return receipt. The receipt relates to an $899 fee; it does not by itself determine what is owed.</p>
+          </div>
+          <div class="debt-callout"><strong>This app can’t tell you whether to pay or dispute.</strong> Ask a qualified legal professional. The clinic in this fictional case is free; call to check its Nov 11 holiday hours.</div>
+        </section>
+      </div>
+    </section>
+
+    <section class="urgent" aria-labelledby="urgent-title">
+      <div>
+        <p class="eyebrow">Chris’s next step</p>
+        <h2 id="urgent-title">Call the legal clinic before going on Nov 11.</h2>
+        <p>It’s Veterans Day, so check that it’s open. Bring the collection letter and phone-return receipt. The letter’s offer date and dispute date are different; see the details below.</p>
+      </div>
+      <a class="button" href="#letter-details"><img class="btn-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='10' fill='%23172f36' fill-opacity='0.12'/%3E%3Crect x='9' y='7' width='18' height='22' rx='2.5' fill='%23172f36'/%3E%3Cpath d='M13 13h10M13 18h10M13 23h6' stroke='%23f2c56b' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E"><span>See letter details</span> <span aria-hidden="true">↓</span></a>
+    </section>
+
+    <details class="more-details" id="more-money">
+      <summary>Explore other money topics and tools</summary>
+      <div class="more-content">
+      <section id="money-map" aria-labelledby="money-map-title">
+      <div class="section-heading">
+        <div><span class="section-kicker">Optional</span><h2 id="money-map-title">Other parts of the money picture</h2><p>These topics connect to everyday cash flow during a transition.</p></div>
+      </div>
+      <div class="money-map">
+        <article class="map-card"><span class="map-icon" aria-hidden="true">↗</span><h3>Income &amp; transition pay</h3><p>Compare military compensation with civilian take-home, pay frequency, deductions, and timing between jobs.</p><span class="known">CASE: pay stub + LES</span></article>
+        <article class="map-card"><span class="map-icon" aria-hidden="true">⌂</span><h3>Housing &amp; monthly bills</h3><p>Map rent, utilities, transportation, food, and other recurring costs against dependable take-home income.</p><span class="known">CASE: $3,082 listed bills</span></article>
+        <article class="map-card"><span class="map-icon" aria-hidden="true">▤</span><h3>Debt &amp; credit</h3><p>Track balances, minimums, due dates, and documentation. Verify a debt claim before treating it as established.</p><span class="known">CASE: two different letter dates</span></article>
+        <article class="map-card"><span class="map-icon" aria-hidden="true">◉</span><h3>Savings &amp; resilience</h3><p>Plan for near-term costs and emergencies in an amount that fits the person's actual budget and priorities.</p><span class="known">CASE: $1,100 in savings</span></article>
+        <article class="map-card"><span class="map-icon" aria-hidden="true">＋</span><h3>Benefits &amp; health coverage</h3><p>Check benefit continuity, eligibility questions, and coverage changes with an accredited or qualified source.</p><span class="known">CASE: not provided—verify</span></article>
+        <article class="map-card"><span class="map-icon" aria-hidden="true">%</span><h3>Taxes &amp; pay deductions</h3><p>Understand withholding and payroll deductions; use payroll or a qualified tax professional for personal guidance.</p><span class="known">CASE: federal, NJ, FICA</span></article>
+        <article class="map-card"><span class="map-icon" aria-hidden="true">▥</span><h3>Retirement &amp; future goals</h3><p>Review old and new plan accounts, contribution details, fees, matching, vesting, and rollover choices with plan support.</p><span class="known">CASE: TSP + 401(k)</span></article>
+        <article class="map-card"><span class="map-icon" aria-hidden="true">◇</span><h3>Insurance &amp; protection</h3><p>Check health, dental, auto, life, and identity protection needs around a job or service transition.</p><span class="known">CASE: new employer deductions</span></article>
+      </div>
+      </section>
+
+      <section class="card" aria-labelledby="goal-title">
+        <div class="card-title"><div><h3 id="goal-title">Savings goal calculator</h3><p>Try an amount. This is only an estimate.</p></div></div>
+        <div class="goal-fields">
+          <label for="goal-amount">Savings goal ($)<input id="goal-amount" type="number" min="0" max="1000000" value="3000" step="50"></label>
+          <label for="monthly-save">Save each month ($)<input id="monthly-save" type="number" min="0" max="1000000" value="100" step="10"></label>
+        </div>
+        <div class="goal-result" id="goal-result" role="status" aria-live="polite"><span>At $100/month, from $1,100 saved</span><strong>19 months</strong></div>
+      </section>
+
+    <section id="transition" aria-labelledby="transition-title">
+      <div class="section-heading">
+        <div><span class="section-kicker">Optional checklist</span><h2 id="transition-title">Other things to check during a transition</h2><p>Pick only the topics that matter to you.</p></div>
+      </div>
+      <div class="transition-grid">
+        <section class="card">
+          <div class="card-title"><div><h3>A holistic check-in</h3><p>Mark topics to revisit. Nothing is saved when the page closes.</p></div></div>
+          <div class="checklist" aria-label="Veteran financial transition check-in">
+            <label><input type="checkbox"><span>List fixed bills, flexible costs, and irregular expenses.</span></label>
+            <label><input type="checkbox"><span>Check health coverage dates with the benefits office.</span></label>
+            <label><input type="checkbox"><span>Ask an accredited VSO about VA benefit questions.</span></label>
+            <label><input type="checkbox"><span>Review old TSP and new 401(k) plan details.</span></label>
+            <label><input type="checkbox"><span>Check payroll withholding and insurance deductions.</span></label>
+            <label><input type="checkbox"><span>Review credit balances and payment dates.</span></label>
+            <label><input type="checkbox"><span>Choose a savings goal that fits your budget.</span></label>
+          </div>
+        </section>
+        <aside class="resource-box" aria-label="Support options from the fictional case">
+          <p class="eyebrow">Fictional case resources</p>
+          <h3>Veterans Legal Clinic at Riverbend Law School</h3>
+          <p>Free help reading and responding to collection letters. The case lists Wednesday walk-ins, 1–5 PM. Confirm whether it is open Nov 11.</p>
+          <h3>Riverbend Credit Counseling</h3>
+          <p>Free one-hour budget review; appointments within one week.</p>
+          <h3>For VA benefit questions</h3>
+          <p>This case does not state Chris's eligibility. For a real person, verify benefits through VA or an accredited Veterans Service Organization representative.</p>
+          <span class="pill amber">All named local organizations in this demo are invented</span>
+        </aside>
+      </div>
+      </section>
+
+    <section aria-labelledby="timeline-title">
+      <div class="section-heading">
+        <div><span class="section-kicker">Optional reminders</span><h2 id="timeline-title">Dates from the letter</h2><p>These are dates quoted from this fictional letter.</p></div>
+      </div>
+      <div class="card">
+        <div class="calendar-row">
+          <p><strong>Near-term:</strong> Confirm the clinic's holiday hours before making a trip.</p>
+          <button class="button secondary" id="calendar-button" type="button"><img class="btn-img" alt="" aria-hidden="true" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='10' fill='%23e1edf6'/%3E%3Crect x='8' y='10' width='20' height='18' rx='3' fill='%23416986'/%3E%3Cpath d='M13 7v5M23 7v5M8 16h20' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round'/%3E%3Crect x='13' y='20' width='4' height='4' rx='1' fill='%23f2c56b'/%3E%3C/svg%3E"><span>Download date reminders</span></button>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item"><span class="timeline-date">NOV 10</span><div><strong>Call the legal clinic</strong><span>Ask whether Wednesday, Veterans Day, hours have changed.</span></div></div>
+          <div class="timeline-item"><span class="timeline-date">NOV 14</span><div><strong>Settlement offer date</strong><span>Letter says $899 offer ends. Not a recommendation to pay.</span></div></div>
+          <div class="timeline-item"><span class="timeline-date">DEC 04</span><div><strong>Stated dispute deadline</strong><span>Letter says to dispute by this date; consult qualified help.</span></div></div>
+        </div>
+      </div>
+    </section>
+      </div>
+    </details>
+
+    <footer class="disclaimer"><strong>Privacy &amp; scope:</strong> Free-form questions and the editable money snapshot are sent to the configured Azure OpenAI deployment through this app’s backend to generate answers. The cash-flow walkthrough is calculated in the browser. The app keeps chat history only in page memory; Azure data-handling terms apply. Don’t include real account numbers or government ID numbers. This tool does not determine benefit eligibility, debt validity, or what legal or financial choice to make.</footer>
+  </main>
+
+  <script>
+    const caseData = {
+      armyNet: 5617.97,
+      armyTaxFreeAllowances: 2576,
+      civilianCheck: 1766.39,
+      paychecksPerYear: 26,
+      savings: 1100,
+      plannedMonthlySavings: 100,
+      savingsGoal: 3000,
+      extraMonthlySavings: 50,
+      creditCardBalance: 2300,
+      collectionClaim: 1284.50,
+      settlementOffer: 899,
+      equipmentFee: 899,
+      receiptDate: "July 28, 2026",
+      offerDate: "November 14, 2026",
+      disputeDate: "December 4, 2026",
+      clinicDate: "Wednesday, November 11, 2026",
+      reminderDates: [
+        { date: "20261110", title: "Call legal clinic to confirm Veterans Day hours", description: "Ask about the Nov 11 holiday schedule and how to get help with the collection letter." },
+        { date: "20261114", title: "Collection letter: settlement offer date", description: "The letter's $899 offer ends today. This reminder is not a recommendation to pay." },
+        { date: "20261204", title: "Collection letter: stated dispute deadline", description: "The letter lists today as the deadline to dispute all or part of the debt. Seek qualified help." }
+      ]
+    };
+
+    const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+    const incomeInput = document.querySelector("#income-input");
+    const expenseInputs = [...document.querySelectorAll("[data-expense]")];
+    const cashError = document.querySelector("#cash-error");
+    const cashTotal = document.querySelector("#cash-total");
+    const cashFlowWorkflow = document.querySelector("#cash-flow-workflow");
+    const cashWorkflowResult = document.querySelector("#cash-workflow-result");
+    const cashScenario = document.querySelector("#cash-scenario");
+    const cashScenarioResult = document.querySelector("#cash-scenario-result");
+    const paycheckWorkflow = document.querySelector("#paycheck-workflow");
+    const paycheckAmount = document.querySelector("#pay-period-amount");
+    const paycheckDescription = document.querySelector("#pay-period-description");
+    const paycheckConfirmation = document.querySelector("#paycheck-confirmation");
+    const moneyWithCents = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+
+    function selectedPaycheckMonthlyIncome() {
+      const selectedPeriod = document.querySelector("input[name='pay-period']:checked").value;
+      const paychecksPerMonth = selectedPeriod === "typical" ? 2 : caseData.paychecksPerYear / 12;
+      return Math.round(caseData.civilianCheck * paychecksPerMonth * 100) / 100;
+    }
+
+    function updatePaycheckPlanningAmount() {
+      const isTypicalMonth = document.querySelector("input[name='pay-period']:checked").value === "typical";
+      paycheckDescription.textContent = isTypicalMonth
+        ? "Take-home in a typical 2-check month"
+        : "Average take-home per month";
+      paycheckAmount.textContent = moneyWithCents.format(selectedPaycheckMonthlyIncome());
+    }
+
+    document.querySelectorAll("input[name='pay-period']").forEach(input => {
+      input.addEventListener("change", updatePaycheckPlanningAmount);
+    });
+
+    document.querySelector("#use-paycheck-income").addEventListener("click", () => {
+      const selectedIncome = selectedPaycheckMonthlyIncome();
+      incomeInput.value = selectedIncome.toFixed(2);
+      incomeInput.dispatchEvent(new Event("input", { bubbles: true }));
+      document.querySelector(".edit-details").open = true;
+      paycheckConfirmation.textContent = `${moneyWithCents.format(selectedIncome)} is now in the monthly budget. Review the listed bills and remaining amount below.`;
+      paycheckConfirmation.hidden = false;
+      document.querySelector("#cash-flow").scrollIntoView({ behavior: "smooth", block: "start" });
+      incomeInput.focus({ preventScroll: true });
+    });
+
+    document.querySelector("#ask-deduction-question").addEventListener("click", () => {
+      const input = document.querySelector("#question-input");
+      paycheckWorkflow.hidden = true;
+      document.querySelector("#answer").hidden = false;
+      input.value = "Can you explain the deductions on Chris's civilian pay stub in plain language? The demo lists federal and New Jersey income tax, Social Security and Medicare (FICA), health and dental insurance, and a 401(k) contribution. Explain generally and remind me to ask payroll about the exact amounts.";
+      void answerQuestion(input.value);
+    });
+
+    function renderCashFlowWorkflow() {
+      if (cashFlowWorkflow.hidden) return;
+      if (![incomeInput, ...expenseInputs].every(validAmount)) {
+        cashWorkflowResult.textContent = "Enter valid monthly amounts below to see your snapshot.";
+        cashScenarioResult.textContent = "";
+        return;
+      }
+
+      const income = incomeInput.valueAsNumber;
+      const expenses = expenseInputs.reduce((sum, input) => sum + input.valueAsNumber, 0);
+      const remaining = income - expenses;
+      cashWorkflowResult.textContent = `${money.format(income)} in − ${money.format(expenses)} out = ${money.format(remaining)} left before unlisted costs.`;
+      if (!cashScenario.hidden) renderCashSavingsScenario();
+    }
+
+    function renderCashSavingsScenario() {
+      const monthlySavingsInput = document.querySelector("#monthly-save");
+      const goalInput = document.querySelector("#goal-amount");
+      const monthlySavings = monthlySavingsInput.valueAsNumber;
+      const goal = goalInput.valueAsNumber;
+      if (
+        ![incomeInput, ...expenseInputs].every(validAmount) ||
+        !Number.isFinite(monthlySavings) || monthlySavings < 0 ||
+        !Number.isFinite(goal) || goal < 0
+      ) {
+        cashScenarioResult.textContent = "Enter valid monthly amounts and savings details to compare this scenario.";
+        return;
+      }
+
+      const leftBeforeSavings = incomeInput.valueAsNumber - expenseInputs.reduce((sum, input) => sum + input.valueAsNumber, 0);
+      const increasedSavings = monthlySavings + 50;
+      const leftAfterSavings = leftBeforeSavings - increasedSavings;
+      const needed = Math.max(0, goal - caseData.savings);
+      const monthsAtCurrent = monthlySavings > 0 ? Math.ceil(needed / monthlySavings) : null;
+      const monthsWithExtra = increasedSavings > 0 ? Math.ceil(needed / increasedSavings) : null;
+      const goalComparison = needed === 0
+        ? "The sample savings goal is already reached."
+        : `The ${money.format(goal)} goal would take about ${monthsAtCurrent === null ? "no estimated time at $0/month" : `${monthsAtCurrent} months at ${money.format(monthlySavings)}/month`} versus ${monthsWithExtra} months at ${money.format(increasedSavings)}/month.`;
+      cashScenarioResult.textContent = `Adding $50 would make savings ${money.format(increasedSavings)}/month, leaving about ${money.format(leftAfterSavings)} after listed bills and savings. ${goalComparison} Estimates exclude irregular costs and interest; this is only a what-if, not a recommendation.`;
+    }
+
+    function validAmount(input) {
+      const value = input.valueAsNumber;
+      return Number.isFinite(value) && value >= 0 && value <= 1000000;
+    }
+
+    function updateCashFlow() {
+      const allInputs = [incomeInput, ...expenseInputs];
+      const invalid = allInputs.filter(input => !validAmount(input));
+      if (invalid.length) {
+        cashError.textContent = "Enter a monthly amount from $0 to $1,000,000 in each field to update the snapshot.";
+        invalid.forEach(input => input.setAttribute("aria-invalid", "true"));
+        renderCashFlowWorkflow();
+        return;
+      }
+
+      allInputs.forEach(input => input.removeAttribute("aria-invalid"));
+      cashError.textContent = "";
+      const income = incomeInput.valueAsNumber;
+      const spending = expenseInputs.reduce((sum, input) => sum + input.valueAsNumber, 0);
+      const remaining = income - spending;
+      const displayRemaining = money.format(remaining);
+      document.querySelector("#stat-income").textContent = money.format(income);
+      document.querySelector("#stat-spending").textContent = money.format(spending);
+      document.querySelector("#stat-leftover").textContent = displayRemaining;
+      document.querySelector("#income-total").textContent = money.format(income);
+      document.querySelector("#spending-total").textContent = money.format(spending);
+      document.querySelector("#spending-edit-total").textContent = money.format(spending);
+      document.querySelector("#leftover-total").textContent = displayRemaining;
+      cashTotal.textContent = displayRemaining;
+      cashTotal.classList.toggle("negative", remaining < 0);
+      document.querySelector("#stat-leftover").classList.toggle("negative", remaining < 0);
+      renderCashFlowWorkflow();
+    }
+
+    [incomeInput, ...expenseInputs].forEach(input => input.addEventListener("input", updateCashFlow));
+
+    function updateSavingsGoal() {
+      const target = document.querySelector("#goal-amount").valueAsNumber;
+      const monthly = document.querySelector("#monthly-save").valueAsNumber;
+      const result = document.querySelector("#goal-result");
+      const needed = target - caseData.savings;
+      if (!Number.isFinite(target) || !Number.isFinite(monthly) || target < 0 || monthly < 0 || target > 1000000 || monthly > 1000000) {
+        result.classList.add("invalid");
+        result.innerHTML = "<span>Enter valid amounts of $0 to $1,000,000.</span>";
+      } else if (needed <= 0) {
+        result.classList.remove("invalid");
+        result.innerHTML = `<span>Current demo savings: ${money.format(caseData.savings)}. The target is already reached.</span><strong>0 months</strong>`;
+      } else if (monthly === 0) {
+        result.classList.add("invalid");
+        result.innerHTML = `<span>${money.format(needed)} more to reach the target at $0/month.</span><strong>No estimate</strong>`;
+      } else {
+        result.classList.remove("invalid");
+        result.innerHTML = `<span>At ${money.format(monthly)}/month, from ${money.format(caseData.savings)} saved</span><strong>${Math.ceil(needed / monthly)} months</strong>`;
+      }
+    }
+
+    const monthlySavingsInput = document.querySelector("#monthly-save");
+    const workflowMonthlySavingsInput = document.querySelector("#workflow-monthly-savings");
+
+    monthlySavingsInput.addEventListener("input", () => {
+      workflowMonthlySavingsInput.value = monthlySavingsInput.value;
+      updateSavingsGoal();
+      if (!cashScenario.hidden) renderCashSavingsScenario();
+    });
+
+    workflowMonthlySavingsInput.addEventListener("input", () => {
+      monthlySavingsInput.value = workflowMonthlySavingsInput.value;
+      updateSavingsGoal();
+      if (!cashScenario.hidden) renderCashSavingsScenario();
+    });
+
+    document.querySelector("#goal-amount").addEventListener("input", () => {
+      updateSavingsGoal();
+      if (!cashScenario.hidden) renderCashSavingsScenario();
+    });
+
+    document.querySelector("#edit-cash-flow-button").addEventListener("click", () => {
+      const editor = document.querySelector(".edit-details");
+      editor.open = true;
+      document.querySelector("#income-input").focus({ preventScroll: true });
+      document.querySelector("#income-input").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    document.querySelector("#show-cash-scenario-button").addEventListener("click", () => {
+      cashScenario.hidden = false;
+      renderCashSavingsScenario();
+    });
+
+    const answerHistory = [];
+
+    function currentSnapshot() {
+      return {
+        income: incomeInput.valueAsNumber,
+        expenses: expenseInputs.reduce((sum, input) => sum + input.valueAsNumber, 0),
+        savings: caseData.savings,
+        monthlySavings: document.querySelector("#monthly-save").valueAsNumber,
+        savingsGoal: document.querySelector("#goal-amount").valueAsNumber
+      };
+    }
+
+    async function answerQuestion(question) {
+      const title = document.querySelector("#answer-heading");
+      const text = document.querySelector("#answer-text");
+      const stepBox = document.querySelector("#answer-step-box");
+      const humanBox = document.querySelector("#answer-human-box");
+      const source = document.querySelector("#answer-source");
+      const followUp = document.querySelector("#follow-up");
+      const followUpOptions = document.querySelector("#follow-up-options");
+      const submit = document.querySelector("#question-form button[type='submit']");
+      const submitLabel = document.querySelector("#submit-button-label");
+      submit.disabled = true;
+      if (submitLabel) submitLabel.textContent = "Thinking…";
+      title.textContent = "Working on your question…";
+      text.textContent = "Finding a clear explanation and one useful next step.";
+      source.textContent = "";
+      stepBox.hidden = true;
+      humanBox.hidden = true;
+      followUp.hidden = true;
+      followUpOptions.replaceChildren();
+
+      try {
+        const apiBase = window.location.protocol === "file:" ? "http://localhost:3000" : "";
+        const response = await fetch(`${apiBase}/api/chat`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            message: question,
+            history: answerHistory.slice(-8),
+            snapshot: currentSnapshot()
+          })
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.error || "The answer service is unavailable. Please try again.");
+        }
+
+        const answer = result.answer;
+        title.textContent = "Here’s the simple version";
+        text.textContent = answer.explanation;
+        document.querySelector("#answer-step").textContent = answer.nextStep;
+        document.querySelector("#answer-human").textContent = answer.humanSupport;
+        stepBox.hidden = false;
+        humanBox.hidden = false;
+        source.textContent = answer.sources.join(" · ");
+        answer.followUps.forEach(prompt => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "question-chip";
+          const img = document.createElement("img");
+          img.className = "chip-img";
+          img.alt = "";
+          img.setAttribute("aria-hidden", "true");
+          img.src = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%23dceee3'/%3E%3Cpath d='M13 20h14m0 0l-5-5m5 5l-5 5' fill='none' stroke='%23245e4b' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E";
+          const span = document.createElement("span");
+          span.textContent = prompt;
+          button.append(img, span);
+          button.addEventListener("click", () => {
+            document.querySelector("#question-input").value = prompt;
+            answerQuestion(prompt);
+          });
+          followUpOptions.append(button);
+        });
+        followUp.hidden = false;
+        answerHistory.push({ role: "user", content: question });
+        answerHistory.push({ role: "assistant", content: JSON.stringify(answer) });
+      } catch (error) {
+        title.textContent = "Couldn’t get an answer";
+        text.textContent = error instanceof Error ? error.message : "The answer service is unavailable. Please try again.";
+        source.textContent = "";
+      } finally {
+        submit.disabled = false;
+        if (submitLabel) submitLabel.textContent = "Explain my question";
+      }
+    }
+
+    document.querySelector("#question-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const input = document.querySelector("#question-input");
+      const description = input.value.trim();
+      if (!description) return;
+      paycheckWorkflow.hidden = true;
+      cashFlowWorkflow.hidden = true;
+      document.querySelector("#answer").hidden = false;
+      void answerQuestion(description);
+    });
+
+    document.querySelectorAll(".ask-examples .question-chip").forEach(button => {
+      button.addEventListener("click", () => {
+        if (button.dataset.workflow === "paycheck") {
+          window.location.assign("./paycheck-change-workflow.html");
+          return;
+        }
+        const input = document.querySelector("#question-input");
+        document.querySelectorAll(".ask-examples .question-chip").forEach(choice => choice.setAttribute("aria-pressed", "false"));
+        button.setAttribute("aria-pressed", "true");
+        input.value = button.dataset.example;
+        paycheckConfirmation.hidden = true;
+        if (button.dataset.workflow === "cash-flow") {
+          paycheckWorkflow.hidden = true;
+          document.querySelector("#answer").hidden = true;
+          cashFlowWorkflow.hidden = false;
+          cashScenario.hidden = true;
+          document.querySelector(".edit-details").open = true;
+          renderCashFlowWorkflow();
+          cashFlowWorkflow.scrollIntoView({ behavior: "smooth", block: "center" });
+          cashFlowWorkflow.focus({ preventScroll: true });
+          return;
+        }
+        paycheckWorkflow.hidden = true;
+        cashFlowWorkflow.hidden = true;
+        document.querySelector("#answer").hidden = false;
+        void answerQuestion(input.value);
+      });
+    });
+
+    document.querySelector("#save-extra-button").addEventListener("click", () => {
+      const question = "What if I save an extra $50 a month?";
+      document.querySelector("#question-input").value = question;
+      void answerQuestion(question);
+    });
+
+    document.querySelector("#ask-another-button").addEventListener("click", () => {
+      const input = document.querySelector("#question-input");
+      input.value = "";
+      input.focus();
+    });
+
+    function escapeIcs(value) {
+      return value.replace(/\\/g, "\\\\").replace(/,/g, "\\,").replace(/;/g, "\\;").replace(/\n/g, "\\n");
+    }
+
+    document.querySelector("#calendar-button").addEventListener("click", () => {
+      const events = caseData.reminderDates.map((reminder, index) => {
+        const nextDay = new Date(Date.UTC(
+          Number(reminder.date.slice(0, 4)),
+          Number(reminder.date.slice(4, 6)) - 1,
+          Number(reminder.date.slice(6, 8)) + 1
+        )).toISOString().slice(0, 10).replace(/-/g, "");
+        return [
+          "BEGIN:VEVENT",
+          `UID:money-moves-${index + 1}@vethack-demo`,
+          "DTSTAMP:20261105T140000Z",
+          `DTSTART;VALUE=DATE:${reminder.date}`,
+          `DTEND;VALUE=DATE:${nextDay}`,
+          `SUMMARY:${escapeIcs(reminder.title)}`,
+          `DESCRIPTION:${escapeIcs(reminder.description)}`,
+          "END:VEVENT"
+        ].join("\r\n");
+      });
+      const calendar = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Money Moves Demo//EN", "CALSCALE:GREGORIAN", ...events, "END:VCALENDAR"].join("\r\n");
+      const url = URL.createObjectURL(new Blob([calendar], { type: "text/calendar;charset=utf-8" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "money-moves-reminders.ics";
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    document.querySelector("#goal-amount").value = caseData.savingsGoal;
+    document.querySelector("#monthly-save").value = caseData.plannedMonthlySavings;
+    document.querySelector("#workflow-monthly-savings").value = caseData.plannedMonthlySavings;
+    updateCashFlow();
+    updateSavingsGoal();
+  </script>
+</body>
+</html>
