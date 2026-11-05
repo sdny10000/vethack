@@ -6,7 +6,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "start": "node --env-file=.env server.mjs"
+    "start": "node --env-file-if-exists=.env server.mjs"
   },
   "dependencies": {
     "@azure/identity": "^4.6.0"

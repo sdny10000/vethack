@@ -4,7 +4,9 @@ import { fileURLToPath } from "node:url";
 import { inflateRawSync } from "node:zlib";
 import { DefaultAzureCredential, InteractiveBrowserCredential } from "@azure/identity";
 
-const port = Number(process.env.PORT ?? 3000);
+const rawPort = process.env.PORT || "3000";
+const port = /^\d+$/.test(String(rawPort)) ? Number(rawPort) : rawPort;
+const host = process.env.HOST || "0.0.0.0";
 function normalizeOpenAiEndpoint(rawEndpoint, projectEndpoint) {
   const source = (rawEndpoint || projectEndpoint || "").trim().replace(/\/+$/, "");
   if (!source) return "";
@@ -689,11 +691,16 @@ const server = createServer(async (request, response) => {
   sendJson(response, 404, { error: "Not found." });
 });
 
-server.listen(port, "127.0.0.1", () => {
+const onListen = () => {
   console.log(`Money Moves is available at http://localhost:${port}`);
   if (!azureOpenAiEndpoint || !model) {
     console.warn("AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_MODEL is not set; AI questions are disabled.");
   }
-});
+};
+if (typeof port === "number") {
+  server.listen(port, host, onListen);
+} else {
+  server.listen(port, onListen);
+}
 
 export { server };
